@@ -1,5 +1,5 @@
 {
-	"lhf_version": "0.2.0",
+	"mde_version": "0.2.0",
 	"namespace": "lfcpa",
 	"scalar_definitions": {
 		"integer": {

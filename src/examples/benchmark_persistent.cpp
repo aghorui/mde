@@ -3,7 +3,7 @@
 #include <cassert>
 #include <random>
 
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 
 enum Operations {
 	UNION = 0,
@@ -12,9 +12,9 @@ enum Operations {
 	DECISION_MAX
 };
 
-using LHF = lhf::LatticeHashForest<lhf::LHFConfig<int>>;
-using Index = LHF::Index;
-using PropertySet = LHF::PropertySet;
+using MDE = mde::MDENode<mde::MDEConfig<int>>;
+using Index = MDE::Index;
+using PropertySet = MDE::PropertySet;
 
 #define PROPERTYSET_MIN_THRESHOLD 4
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	}
 
 
-	LHF l;
+	MDE l;
 
 	std::random_device rd;
 	std::mt19937 eng(rd());

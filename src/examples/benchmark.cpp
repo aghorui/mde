@@ -3,7 +3,7 @@
 #include <sstream>
 #include <cassert>
 
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -18,11 +18,11 @@ int main(int argc, char **argv) {
 		RESULT
 	} state = OPERTYPE;
 
-	using LHF = lhf::LatticeHashForest<lhf::LHFConfig<int>>;
-	using Index = LHF::Index;
-	using PropertySet = LHF::PropertySet;
+	using MDE = mde::MDENode<mde::MDEConfig<int>>;
+	using Index = MDE::Index;
+	using PropertySet = MDE::PropertySet;
 
-	LHF l;
+	MDE l;
 	PropertySet arg1;
 	PropertySet arg2;
 	PropertySet result;
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 			for (int i = 0; i < len; i++) {
 				int val;
 				s >> val;
-				LHF_PUSH_ONE(arg1, val);
+				MDE_PUSH_ONE(arg1, val);
 			}
 			state = ARG2;
 			break;
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
 			for (int i = 0; i < len; i++) {
 				int val;
 				s >> val;
-				LHF_PUSH_ONE(arg2, val);
+				MDE_PUSH_ONE(arg2, val);
 			}
 			state = RESULT;
 			break;
@@ -100,23 +100,23 @@ int main(int argc, char **argv) {
 			for (int i = 0; i < len; i++) {
 				int val;
 				s >> val;
-				LHF_PUSH_ONE(result, val);
+				MDE_PUSH_ONE(result, val);
 			}
 
 			// std::cout
-			// 	<< "      ARG1:" << lhf::container_to_string(arg1)   << "\n"
-			// 	<< "      ARG2:" << lhf::container_to_string(arg2)   << "\n";
+			// 	<< "      ARG1:" << mde::container_to_string(arg1)   << "\n"
+			// 	<< "      ARG2:" << mde::container_to_string(arg2)   << "\n";
 
 			// for (auto &t : l.property_sets) {
-			// 	std::cout << "          values:" << t.get()  << " " << lhf::ptr_container_to_string(t) << "\n";
+			// 	std::cout << "          values:" << t.get()  << " " << mde::ptr_container_to_string(t) << "\n";
 			// }
 
 			// std::cout << "          list size: " << l.property_sets.size() << "\n";
 			// assert(l.property_sets.size() >= 1);
-			// std::cout << "          list elem 0: " << lhf::ptr_container_to_string(l.property_sets[0]) << "\n";
+			// std::cout << "          list elem 0: " << mde::ptr_container_to_string(l.property_sets[0]) << "\n";
 			// assert(l.property_sets.size() >= 1);
 
-#ifdef LHF_USE_SORTED_VECTOR_FOR_PROPERTY_SETS
+#ifdef MDE_USE_SORTED_VECTOR_FOR_PROPERTY_SETS
 			l.prepare_vector_set(result);
 			l.prepare_vector_set(arg1);
 			l.prepare_vector_set(arg2);

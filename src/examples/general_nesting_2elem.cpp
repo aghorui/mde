@@ -1,28 +1,28 @@
 #include <iostream>
 
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 
 int main() {
-	using Child1LHF =
-		lhf::LatticeHashForest<lhf::LHFConfig<double>>;
+	using Child1MDE =
+		mde::MDENode<mde::MDEConfig<double>>;
 
-	using Child1Index = typename Child1LHF::Index;
+	using Child1Index = typename Child1MDE::Index;
 
-	using Child2LHF =
-		lhf::LatticeHashForest<lhf::LHFConfig<double>>;
+	using Child2MDE =
+		mde::MDENode<mde::MDEConfig<double>>;
 
-	using Child2Index = typename Child2LHF::Index;
+	using Child2Index = typename Child2MDE::Index;
 
-	using LHF =
-		lhf::LatticeHashForest<
-			lhf::LHFConfig<double>,
-			lhf::NestingBase<int, Child1LHF, Child2LHF>>;
+	using MDE =
+		mde::MDENode<
+			mde::MDEConfig<double>,
+			mde::NestingBase<int, Child1MDE, Child2MDE>>;
 
-	using Index = typename LHF::Index;
+	using Index = typename MDE::Index;
 
-	Child1LHF cl1;
-	Child2LHF cl2;
-	LHF l({cl1, cl2});
+	Child1MDE cl1;
+	Child2MDE cl2;
+	MDE l({cl1, cl2});
 
 	Child1Index a1 = cl1.register_set_single(212.23);
 	Child1Index b1 = cl1.register_set({22.2, 33.4, 33.122});

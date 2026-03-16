@@ -1,13 +1,13 @@
-# LatticeHashForest
+# Multilevel Deduplication Engine (MDE)
 
-LatticeHashForest (LHF) is a data representation caching mechanism that is meant
-to facilitate aggressive caching of redundant data, and operations performed on
-such redundant data. LHF aims to reduce both the memory footprint as well as the
-CPU time used by an application for every operation performed on its data when
-compared to naive storage and operations on it by reducing each unique instance
-of data to a unique integer identifier, and reducing the cost of performing
-any bulk operation on data as much as possible. It builds on the following
-assumptions for some given information system:
+Multilevel Deduplication Engine (MDE) is a data representation caching mechanism
+that is meant to facilitate aggressive caching of redundant data, and operations
+performed on such redundant data. MDE aims to reduce both the memory footprint
+as well as the CPU time used by an application for every operation performed on
+its data when compared to naive storage and operations on it by reducing each
+unique instance of data to a unique integer identifier, and reducing the cost
+of performing any bulk operation on data as much as possible. It builds on the
+following assumptions for some given information system:
 
 1. Data is often repetitive.
 2. Data is often redundantly computed.
@@ -15,29 +15,29 @@ assumptions for some given information system:
 4. There are (usually) set patterns and common input data used for the
    computation of new data.
 
-LHF finds its main applications in the domain of compilers and code
+MDE finds its main applications in the domain of compilers and code
 optimization, specifically in the field of data-flow analyses, such as Liveness
 Analysis and Points-to Analysis.
 
-The current LHF toolset consists of a C++ implementation of the mechanism, and
+The current MDE toolset consists of a C++ implementation of the mechanism, and
 a Python script that generates an automatically set-up interface from a given
 input description.
 
-LHF assigns a unique number to each unique set that is inserted or computed,
+MDE assigns a unique number to each unique set that is inserted or computed,
 which reduces operations, like checking for equality, to a simple integer
 comparison. In order to prevent duplicate sets, a mapping from the set to the
 unique integer is stored in a hash table. The set's contents are hashed.
 
-LHF hashes operations like unions, intersections and differences as well,
+MDE hashes operations like unions, intersections and differences as well,
 and stores the mapping for each operation (a pair of integers denoting the two
 operands, to the result, which is another integer) in a separate hash table,
 allowing for efficient access to already computed information. Other inferences
 from the operation, such as subset relations are also hashed in order to
 possibly speed up future operations.
 
-LHF is meant to be extended to fit the needs of a particular use case. The
+MDE is meant to be extended to fit the needs of a particular use case. The
 class should be derived and more operations or facilities should be implemented
-as required if in case the default LHF class does not meet all needs.
+as required if in case the default MDE class does not meet all needs.
 
 This project is still in active development.
 
@@ -80,7 +80,7 @@ make install
 
 ## Testing
 
-LHF uses GoogleTest as its unit testing suit. To enable it in the LHF build,
+MDE uses GoogleTest as its unit testing suit. To enable it in the MDE build,
 pass another flag to the CMake configure command:
 
 ```
@@ -98,7 +98,7 @@ In the build directory.
 ## Documentation
 
 Please refer to the [Guide](./doc/guide.md) for detailed documentation with
-respect to the structure and usage of LHF.
+respect to the structure and usage of MDE.
 
 API documentation can be generated using `gendoc.sh` in the project folder. You
 must have Doxygen and the python package `json-schema-for-humans` installed in
@@ -109,7 +109,7 @@ bash gendoc.sh
 ```
 
 After a successful invocation, the schema documentation for blueprint files
-(please see the guide) and API documentation for LHF itself will be available
+(please see the guide) and API documentation for MDE itself will be available
 in `./doc_generated/schema` and `./doc_generated/doxygen` respectively.
 
 ## License

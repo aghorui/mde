@@ -1,45 +1,45 @@
-{% macro lhf_nesting(entity, lhf_namespace) -%}
+{% macro mde_nesting(entity, mde_namespace) -%}
 {%- if entity.nesting_type == NestingType.NONE -%}
-	{{ lhf_namespace }}::NestingNone<{{ entity.type_name }}>
+	{{ mde_namespace }}::NestingNone<{{ entity.type_name }}>
 {%- elif entity.nesting_type == NestingType.BASE -%}
-	{{ lhf_namespace }}::NestingBase<{{ entity.type_name }}, {{ entity.nesting_elems | join(', ') }}>
+	{{ mde_namespace }}::NestingBase<{{ entity.type_name }}, {{ entity.nesting_elems | join(', ') }}>
 {%- elif entity.nesting_type == NestingType.IMPLICIT -%}
-	{{ lhf_namespace }}::NestingNone<{{ entity.type_name }}>
+	{{ mde_namespace }}::NestingNone<{{ entity.type_name }}>
 {%- else -%}
 	{{ raise("Unhandled Nesting Type: " + entity.nesting_type) }}
 {%- endif -%}
 {%- endmacro %}
 
-{% macro lhf_declaration(entity, lhf_namespace, lhf_name) %}
-struct {{ entity.name }} : {{ lhf_namespace }}::{{ lhf_name }}<
+{% macro mde_declaration(entity, mde_namespace, mde_name) %}
+struct {{ entity.name }} : {{ mde_namespace }}::{{ mde_name }}<
 	{{ entity.type_name }},
 	{{ entity.less }},
 	{{ entity.hash }},
 	{{ entity.equal }},
 	{{ entity.print }},
-	{{ lhf_nesting(entity, lhf_namespace) }}
+	{{ mde_nesting(entity, mde_namespace) }}
 	> {
-	explicit {{ entity.name }}(RefList reflist): {{ lhf_name }}(reflist) {}
+	explicit {{ entity.name }}(RefList reflist): {{ mde_name }}(reflist) {}
 
-	// LHF-LEVEL COMPONENTS GO HERE
+	// MDE-LEVEL COMPONENTS GO HERE
 };
 {% endmacro %}
 
-{% macro lhf_aliases(item) %}
+{% macro mde_aliases(item) %}
 using {{ item.from }} = {{ item.to }};
 {% endmacro %}
 
-{%- macro lhf_constructor(entity) -%}
+{%- macro mde_constructor(entity) -%}
 	{ {{ entity.dependencies | join(', ') }} }
 {%- endmacro -%}
 
-{% macro lhf_interface_binary_operation(entity, operation) %}
+{% macro mde_interface_binary_operation(entity, operation) %}
 	{{ entity.interface_name }} {{ operation }}(const {{ entity.interface_name }} &b) {
 		return {{ entity.interface_name }}({{ entity.var_name }}.{{operation}}(set_index, b.set_index));
 	}
 {% endmacro %}
 
-{% macro lhf_interface(entity, state_struct_name) %}
+{% macro mde_interface(entity, state_struct_name) %}
 struct {{ entity.interface_name }} : InterfaceBase<{{ entity.name }}> {
 	struct Element {
 		const {{ entity.name }}::PropertyElement &p;
@@ -55,9 +55,9 @@ struct {{ entity.interface_name }} : InterfaceBase<{{ entity.name }}> {
 
 	// CONTAINER INTERFACE GOES HERE
 
-	{{ lhf_interface_binary_operation(entity, "set_union") }}
-	{{ lhf_interface_binary_operation(entity, "set_difference") }}
-	{{ lhf_interface_binary_operation(entity, "set_intersection") }}
+	{{ mde_interface_binary_operation(entity, "set_union") }}
+	{{ mde_interface_binary_operation(entity, "set_difference") }}
+	{{ mde_interface_binary_operation(entity, "set_intersection") }}
 
 	{{ entity.interface_name }} set_insert_single(const {{ entity.name }}::PropertyElement &p) {
 		return {{ entity.interface_name }}({{ entity.var_name }}.set_insert_single(set_index, p));

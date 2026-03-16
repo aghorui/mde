@@ -3,7 +3,7 @@
 This is a list of features that have been used in this project. This may be
 useful for porting it back to some earlier C++ standard if needed.
 
-LHF currently requires C++17 to compile.
+MDE currently requires C++17 to compile.
 
 * `std::make_index_sequence`: C++14
 
@@ -20,7 +20,7 @@ LHF currently requires C++17 to compile.
 
 # List of Compiler-Specific Pragmas Used in the Project
 
-LHF currently uses a single GCC pragma to disable a warning for `-Wtype-limits`.
+MDE currently uses a single GCC pragma to disable a warning for `-Wtype-limits`.
 Inside of a sanity check macro. No switch has yet been added for other
 compilers but can be easily added.
 

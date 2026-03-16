@@ -1,19 +1,19 @@
 /**
- * @file lhf.hpp
- * @brief Defines the LatticeHashForest structure and related tools.
+ * @file mde.hpp
+ * @brief Defines the MDENode structure and related tools.
  */
 
-#ifndef LHF_HPP
-#define LHF_HPP
+#ifndef MDE_HPP
+#define MDE_HPP
 
-#include "lhf_common.hpp"
+#include "mde_common.hpp"
 #include "profiling.hpp"
 
 #include <tuple>
 #include <utility>
 #include <algorithm>
 
-namespace lhf {
+namespace mde {
 
 /**
  * @brief      This struct contains the information about the operands of an
@@ -42,22 +42,22 @@ inline std::ostream &operator<<(std::ostream &os, const OperationNode &op) {
 	return os << op.to_string();
 }
 
-} // END namespace lhf
+} // END namespace mde
 
 /************************** START GLOBAL NAMESPACE ****************************/
 
 template <>
-struct std::hash<lhf::OperationNode> {
-	lhf::Size operator()(const lhf::OperationNode& k) const {
+struct std::hash<mde::OperationNode> {
+	mde::Size operator()(const mde::OperationNode& k) const {
 		return
-			std::hash<lhf::IndexValue>()(k.left) ^
-			(std::hash<lhf::IndexValue>()(k.right) << 1);
+			std::hash<mde::IndexValue>()(k.left) ^
+			(std::hash<mde::IndexValue>()(k.right) << 1);
 	}
 };
 
 /************************** END GLOBAL NAMESPACE ******************************/
 
-namespace lhf {
+namespace mde {
 
 /**
  * @brief      Generic Less-than comparator for set types.
@@ -158,7 +158,7 @@ struct SetEqual {
 	}
 };
 
-#ifdef LHF_ENABLE_TBB
+#ifdef MDE_ENABLE_TBB
 
 /**
  * @brief      Comparison operator specifically meant to accomodate TBB data
@@ -199,13 +199,13 @@ struct Unreachable : public std::runtime_error {
 		std::runtime_error(message.c_str()) {}
 };
 
-#define __LHF_EXCEPT(__msg) AssertError(__msg " [At: " __FILE__ ":" __LHF_STR(__LINE__) "]")
+#define __MDE_EXCEPT(__msg) AssertError(__msg " [At: " __FILE__ ":" __MDE_STR(__LINE__) "]")
 
-#ifdef LHF_DEBUG
-#define __LHF_ASSERT(__cond, __msg_arg) \
-	{ if (!(__cond)) { __LHF_EXCEPT(__msg_arg); } }
+#ifdef MDE_DEBUG
+#define __MDE_ASSERT(__cond, __msg_arg) \
+	{ if (!(__cond)) { __MDE_EXCEPT(__msg_arg); } }
 #else
-#define __LHF_ASSERT(__cond, __msg_arg)
+#define __MDE_ASSERT(__cond, __msg_arg)
 #endif
 
 
@@ -242,81 +242,81 @@ static inline void verify_property_set_integrity(const PropertySetT &cont) {
 }
 
 /**
- * @def        LHF_PROPERTY_SET_INTEGRITY_VALID(__set)
- * @brief      Macro and switch for `verify_property_set_integrity` inside LHF.
+ * @def        MDE_PROPERTY_SET_INTEGRITY_VALID(__set)
+ * @brief      Macro and switch for `verify_property_set_integrity` inside MDE.
  * @param      __set  The property set.
  */
 
-#ifndef LHF_DISABLE_INTEGRITY_CHECKS
-#define LHF_PROPERTY_SET_INTEGRITY_VALID(__set) \
+#ifndef MDE_DISABLE_INTEGRITY_CHECKS
+#define MDE_PROPERTY_SET_INTEGRITY_VALID(__set) \
 	verify_property_set_integrity<PropertySet, PropertyElement>(__set);
 #else
-#define LHF_PROPERTY_SET_INTEGRITY_VALID(__set)
+#define MDE_PROPERTY_SET_INTEGRITY_VALID(__set)
 #endif
 
 
 /**
- * @def        LHF_PROPERTY_SET_INDEX_VALID(__index)
+ * @def        MDE_PROPERTY_SET_INDEX_VALID(__index)
  * @brief      Check whether the index is a valid index within the property set.
  * @note       Signed/unsigned is made to be ignored here for the sanity checking.
  */
 
 /**
- * @def        LHF_PROPERTY_SET_PAIR_VALID(__index1, __index2)
+ * @def        MDE_PROPERTY_SET_PAIR_VALID(__index1, __index2)
  * @brief      Check whether the pair of indexes is a valid within the property set.
  */
 
 /**
- * @def        LHF_PROPERTY_SET_PAIR_UNEQUAL(__index1, __index2)
+ * @def        MDE_PROPERTY_SET_PAIR_UNEQUAL(__index1, __index2)
  * @brief      Check whether the pair of indexes are unequal. Used for sanity checking.
  */
 
-#ifdef LHF_ENABLE_DEBUG
+#ifdef MDE_ENABLE_DEBUG
 
-/// Check whether the index is a valid index within the current LHF state.
+/// Check whether the index is a valid index within the current MDE state.
 /// @note Signed/unsigned is made to be ignored here for the sanity checking.
-#define LHF_PROPERTY_SET_INDEX_VALID(__index) { \
+#define MDE_PROPERTY_SET_INDEX_VALID(__index) { \
 	_Pragma("GCC diagnostic push"); \
 	_Pragma("GCC diagnostic ignored \"-Wtype-limits\"") \
 	if ((__index.value) < 0 || ((__index.value) > property_sets.size() - 1)) { \
-		throw __LHF_EXCEPT("Invalid index supplied"); \
+		throw __MDE_EXCEPT("Invalid index supplied"); \
 	} \
 	_Pragma("GCC diagnostic pop") \
 }
 
 /// Check whether the pair of indexes is a valid within the property set.
-#define LHF_PROPERTY_SET_PAIR_VALID(__index1, __index2) \
-	LHF_PROPERTY_SET_INDEX_VALID(__index1); \
-	LHF_PROPERTY_SET_INDEX_VALID(__index2);
+#define MDE_PROPERTY_SET_PAIR_VALID(__index1, __index2) \
+	MDE_PROPERTY_SET_INDEX_VALID(__index1); \
+	MDE_PROPERTY_SET_INDEX_VALID(__index2);
 
 /// Check whether the pair of indexes are unequal. Used for sanity checking.
-#define LHF_PROPERTY_SET_PAIR_UNEQUAL(__index1, __index2) \
+#define MDE_PROPERTY_SET_PAIR_UNEQUAL(__index1, __index2) \
 	if ((__index1) == (__index2)) { \
-		throw __LHF_EXCEPT("Equal set condition not handled by caller"); \
+		throw __MDE_EXCEPT("Equal set condition not handled by caller"); \
 	}
 
 #else
 
-#define LHF_PROPERTY_SET_INDEX_VALID(__index)
-#define LHF_PROPERTY_SET_PAIR_VALID(__index1, __index2)
-#define LHF_PROPERTY_SET_PAIR_UNEQUAL(__index1, __index2)
+#define MDE_PROPERTY_SET_INDEX_VALID(__index)
+#define MDE_PROPERTY_SET_PAIR_VALID(__index1, __index2)
+#define MDE_PROPERTY_SET_PAIR_UNEQUAL(__index1, __index2)
 
 #endif
 
-#if defined(LHF_ENABLE_PARALLEL) && !defined(LHF_ENABLE_TBB)
-#define LHF_PARALLEL(__x) __x
+#if defined(MDE_ENABLE_PARALLEL) && !defined(MDE_ENABLE_TBB)
+#define MDE_PARALLEL(__x) __x
 #else
-#define LHF_PARALLEL(__x)
+#define MDE_PARALLEL(__x)
 #endif
 
-#ifdef LHF_ENABLE_EVICTION
-#define LHF_EVICTION(__x) __x
+#ifdef MDE_ENABLE_EVICTION
+#define MDE_EVICTION(__x) __x
 #else
-#define LHF_EVICTION(__x)
+#define MDE_EVICTION(__x)
 #endif
 
 /**
- * @def LHF_PUSH_ONE(__cont, __val)
+ * @def MDE_PUSH_ONE(__cont, __val)
  * @brief      Pushes one element to a PropertySet. Use this when implementing
  *             operations.
  *
@@ -324,10 +324,10 @@ static inline void verify_property_set_integrity(const PropertySetT &cont) {
  * @param      __val   The value
  *
  */
-#define LHF_PUSH_ONE(__cont, __val) (__cont).push_back((__val))
+#define MDE_PUSH_ONE(__cont, __val) (__cont).push_back((__val))
 
 /**
- * @def LHF_PUSH_RANGE(__cont, __start, __end)
+ * @def MDE_PUSH_RANGE(__cont, __start, __end)
  * @brief      Pushes a range of elements to a PropertySet using an iterator.
  *             Use this when implementing operations.
  *
@@ -336,21 +336,21 @@ static inline void verify_property_set_integrity(const PropertySetT &cont) {
  * @param      __end   The end of the range (e.g. input.end())
  *
  */
-#define LHF_PUSH_RANGE(__cont, __start, __end) (__cont).insert((__cont).end(), (__start), (__end))
+#define MDE_PUSH_RANGE(__cont, __start, __end) (__cont).insert((__cont).end(), (__start), (__end))
 
 
 /**
- * @def LHF_REGISTER_SET_INTERNAL(__set, __cold)
+ * @def MDE_REGISTER_SET_INTERNAL(__set, __cold)
  * @brief      Registers a set with behaviours defined for internal processing.
  *
  * @param      __set   The set
  * @param      __cold  Whether this was a cold miss or not (pointer to bool)
  */
-#define LHF_REGISTER_SET_INTERNAL(__set, __cold) register_set<LHF_DISABLE_INTERNAL_INTEGRITY_CHECK>((__set), (__cold))
+#define MDE_REGISTER_SET_INTERNAL(__set, __cold) register_set<MDE_DISABLE_INTERNAL_INTEGRITY_CHECK>((__set), (__cold))
 
 /**
  * @brief      The nesting type for non-nested data structures. Act as "leaf"
- *             nodes in a tree of nested LHFs.
+ *             nodes in a tree of nested MDEs.
  *
  * @tparam     PropertyT  The 'key' property
  */
@@ -363,10 +363,10 @@ struct NestingNone {
 	static constexpr Size num_children = 0;
 
 
-	/// Reference list. In the base case, there are no child LHFs.
-	using LHFReferenceList =  std::tuple<>;
+	/// Reference list. In the base case, there are no child MDEs.
+	using MDEReferenceList =  std::tuple<>;
 
-	/// Child value list. In the base case, there are no child LHFs.
+	/// Child value list. In the base case, there are no child MDEs.
 	using ChildValueList = std::tuple<>;
 
 	/**
@@ -469,7 +469,7 @@ struct NestingNone {
 
 
 /**
- * @def        LHF_BINARY_NESTED_OPERATION(__op_name)
+ * @def        MDE_BINARY_NESTED_OPERATION(__op_name)
  * @brief      Declares a struct that enables the recursive/nesting behaviour of
  *             an operation.
  *
@@ -478,33 +478,33 @@ struct NestingNone {
  *
  * @return     The set declaration.
  */
-#define LHF_BINARY_NESTED_OPERATION(__op_name) \
+#define MDE_BINARY_NESTED_OPERATION(__op_name) \
 	struct __NestingOperation_ ## __op_name { \
-		template<typename ArgIndex, typename LHF> \
-		void operator()(ArgIndex &ret, LHF &lhf, const ArgIndex &c, const ArgIndex &d) { \
-			ret = lhf . __op_name (c, d); \
+		template<typename ArgIndex, typename MDE> \
+		void operator()(ArgIndex &ret, MDE &mde, const ArgIndex &c, const ArgIndex &d) { \
+			ret = mde . __op_name (c, d); \
 		} \
 	};
 
 /**
- * @def        LHF_PERFORM_BINARY_NESTED_OPERATION(__op_name, __reflist, __arg1, __arg2)
+ * @def        MDE_PERFORM_BINARY_NESTED_OPERATION(__op_name, __reflist, __arg1, __arg2)
  * @brief      Actually enables the nesting. this must be placed in the
  *             operation body where the nested behaviour is needed.
  *
  * @param      __op_name  The operation name.
- * @param      __reflist  The reference list of the LHF
+ * @param      __reflist  The reference list of the MDE
  * @param      __arg1     LHS argument of the binary operation
  * @param      __arg2     RHS argument of the binary operation
  *
  */
-#define LHF_PERFORM_BINARY_NESTED_OPERATION(__op_name, __reflist, __arg1, __arg2) \
+#define MDE_PERFORM_BINARY_NESTED_OPERATION(__op_name, __reflist, __arg1, __arg2) \
 	((__arg1) . template apply<__NestingOperation_ ## __op_name>((__reflist), (__arg2)))
 
 /**
  * @brief      Describes the standard nesting structure. Act as "non-leaf" nodes
- *             in a tree of nested LHFs.
+ *             in a tree of nested MDEs.
  *
- * @tparam     PropertyT  The key property that the LHF acts upon.
+ * @tparam     PropertyT  The key property that the MDE acts upon.
  * @tparam     ChildT     the children of the property that are nested.
  */
 template<typename PropertyT, typename ...ChildT>
@@ -516,10 +516,10 @@ struct NestingBase {
 	/// are equal to the number of parameters in the template parameter pack.
 	static constexpr Size num_children = sizeof...(ChildT);
 
-	/// Reference list. References to all the nested LHFs are presented here.
-	using LHFReferenceList = std::tuple<ChildT&...>;
+	/// Reference list. References to all the nested MDEs are presented here.
+	using MDEReferenceList = std::tuple<ChildT&...>;
 
-	/// Child index tuple. This contains index types of all of the child LHFs.
+	/// Child index tuple. This contains index types of all of the child MDEs.
 	/// This is what is used to store indices to the nested values.
 	using ChildValueList = std::tuple<typename ChildT::Index...>;
 
@@ -582,7 +582,7 @@ struct NestingBase {
 		/**
 		 * @brief      Gets the nested value. It returns a tuple of values
 		 *             containing indices to each of the nested sets of
-		 *             different LHFs.
+		 *             different MDEs.
 		 *
 		 * @return     The value.
 		 */
@@ -613,7 +613,7 @@ struct NestingBase {
 		 * @note       This feature in particular requires C++14 and above.
 		 *
 		 * @param      ret        The list of results.
-		 * @param[in]  lhf        The list of references to the LHF.
+		 * @param[in]  mde        The list of references to the MDE.
 		 * @param[in]  arg_value  The list of values in the right-hand side
 		 *                        operand.
 		 *
@@ -623,11 +623,11 @@ struct NestingBase {
 		template <typename Operation, Size... Indices>
 		void apply_internal(
 			ChildValueList &ret,
-			const LHFReferenceList &lhf,
+			const MDEReferenceList &mde,
 			const ChildValueList &arg_value,
 			std::index_sequence<Indices...>) const {
 			((Operation()(std::get<Indices>(ret),
-				std::get<Indices>(lhf),
+				std::get<Indices>(mde),
 				std::get<Indices>(_value),
 				std::get<Indices>(arg_value)
 				)), ...);
@@ -637,7 +637,7 @@ struct NestingBase {
 		 * @brief      Performs the "apply" operation on the list of nested
 		 *             children specified by the `Operation` parameter.
 		 *
-		 * @param[in]  lhf        The list of references to the LHF.
+		 * @param[in]  mde        The list of references to the MDE.
 		 * @param[in]  arg        The right-hand side operand.
 		 *
 		 * @tparam     Operation  The operation to perform.
@@ -647,12 +647,12 @@ struct NestingBase {
 		 */
 		template<typename Operation>
 		PropertyElement apply(
-			const LHFReferenceList &lhf,
+			const MDEReferenceList &mde,
 			const PropertyElement &arg) const {
 			ChildValueList ret;
 			apply_internal<Operation>(
 				ret,
-				lhf,
+				mde,
 				arg._value,
 				std::make_index_sequence<num_children>{});
 			return PropertyElement(_key, ret);
@@ -706,14 +706,14 @@ struct NestingBase {
 
 /**
  * @def        MapAdapter
- * @brief      Enables the interface used by LHF for using a map data structure
+ * @brief      Enables the interface used by MDE for using a map data structure
  *             for any given map implementation. This preprocessor if-ladder
  *             should be expanded as needed for any newer implementations.
  *
  * @tparam     MapClass The Map implementation to adapt.
  */
 
-#ifdef LHF_ENABLE_TBB
+#ifdef MDE_ENABLE_TBB
 
 template<typename MapClass>
 class MapAdapter {
@@ -782,11 +782,11 @@ public:
 
 protected:
 	Map data;
-	LHF_PARALLEL(mutable RWMutex mutex;)
+	MDE_PARALLEL(mutable RWMutex mutex;)
 
 public:
 	Optional<MappedType> find(const Key &key) const {
-		LHF_PARALLEL(ReadLock m(mutex);)
+		MDE_PARALLEL(ReadLock m(mutex);)
 		auto value = data.find(key);
 		if (value == data.end()) {
 			return Optional<MappedType>::absent();
@@ -796,17 +796,17 @@ public:
 	}
 
 	void insert(KeyValuePair &&v) {
-		LHF_PARALLEL(WriteLock m(mutex);)
+		MDE_PARALLEL(WriteLock m(mutex);)
 		data.insert(std::move(v));
 	}
 
 	void clear() {
-		LHF_PARALLEL(WriteLock m(mutex);)
+		MDE_PARALLEL(WriteLock m(mutex);)
 		data.clear();
 	}
 
 	Size size() const {
-		LHF_PARALLEL(ReadLock m(mutex);)
+		MDE_PARALLEL(ReadLock m(mutex);)
 		return data.size();
 	}
 
@@ -819,7 +819,7 @@ public:
 	}
 
 	String to_string() const {
-		LHF_PARALLEL(ReadLock m(mutex);)
+		MDE_PARALLEL(ReadLock m(mutex);)
 		std::stringstream s;
 
 		for (auto i : data) {
@@ -836,10 +836,10 @@ public:
 
 /**
  * @def        InternalMap
- * @brief      Convenience declaration for using simple maps in LHF.
+ * @brief      Convenience declaration for using simple maps in MDE.
  */
 
-#ifdef LHF_ENABLE_TBB
+#ifdef MDE_ENABLE_TBB
 
 template<typename K, typename V>
 using InternalMap = MapAdapter<tbb::concurrent_hash_map<K, V>>;
@@ -852,7 +852,7 @@ using InternalMap = MapAdapter<HashMap<K, V>>;
 #endif
 
 /**
- * Defines the map of operations in LHF. Template parameter can be used to set
+ * Defines the map of operations in MDE. Template parameter can be used to set
  * an operation of any arity.
  */
 template<typename T>
@@ -897,23 +897,23 @@ struct OperationPerf {
 };
 
 /**
- * @def        LHF_PERF_INC(__oper, __category)
+ * @def        MDE_PERF_INC(__oper, __category)
  * @brief      Increments the invocation count of the given category and operator.
  *
- * @note       Conditionally enabled if `LHF_ENABLE_PERFORMANCE_METRICS` is set.
+ * @note       Conditionally enabled if `MDE_ENABLE_PERFORMANCE_METRICS` is set.
  *
  * @param      __oper      The operator (e.g. `unions`)
  * @param      __category  The category (e.g. `hits`)
  */
 
-#ifdef LHF_ENABLE_PERFORMANCE_METRICS
-#define LHF_PERF_INC(__oper, __category) (perf[__LHF_STR(__oper)] . __category ++)
+#ifdef MDE_ENABLE_PERFORMANCE_METRICS
+#define MDE_PERF_INC(__oper, __category) (perf[__MDE_STR(__oper)] . __category ++)
 #else
-#define LHF_PERF_INC(__oper, __category)
+#define MDE_PERF_INC(__oper, __category)
 #endif
 
 template <typename T>
-struct LHFConfig {
+struct MDEConfig {
 	static constexpr const char* name = "";
 
 	using PropertyT          = T;
@@ -922,13 +922,13 @@ struct LHFConfig {
 	using PropertyEqual      = DefaultEqual<PropertyT>;
 	using PropertyPrinter    = DefaultPrinter<PropertyT>;
 
-	static constexpr Size BLOCK_SHIFT = LHF_DEFAULT_BLOCK_SHIFT;
-	static constexpr Size BLOCK_SIZE  = LHF_DEFAULT_BLOCK_SIZE;
-	static constexpr Size BLOCK_MASK  = LHF_DEFAULT_BLOCK_MASK;
+	static constexpr Size BLOCK_SHIFT = MDE_DEFAULT_BLOCK_SHIFT;
+	static constexpr Size BLOCK_SIZE  = MDE_DEFAULT_BLOCK_SIZE;
+	static constexpr Size BLOCK_MASK  = MDE_DEFAULT_BLOCK_MASK;
 };
 
 /**
- * @brief      The main LatticeHashForest structure.
+ * @brief      The main MDENode structure.
  *             This class can be used as-is with a type or derived for
  *             additional functionality as needed
  *
@@ -943,12 +943,12 @@ struct LHFConfig {
  * @tparam     PropertyHash     Custom hasher (if required)
  * @tparam     PropertyEqual    Custom equality comaparator (if required)
  * @tparam     PropertyPrinter  PropertyT string representation generator
- * @tparam     NestingT         Nesting behaviour of the LHF
+ * @tparam     NestingT         Nesting behaviour of the MDE
  */
 template <
 	typename Config,
 	typename NestingT = NestingNone<typename Config::PropertyT>>
-class LatticeHashForest {
+class MDENode {
 public:
 	using PropertyT          = typename Config::PropertyT;
 	using PropertyLess       = typename Config::PropertyLess;
@@ -1057,9 +1057,9 @@ public:
 	 *       Careful handling, especially in the case of reallocating structures
 	 *       like vectors is needed so that the address of the data does not
 	 *       change. It must remain static for the duration of the existence of
-	 *       the LHF instance.
+	 *       the MDE instance.
 	 */
-#ifdef LHF_ENABLE_TBB
+#ifdef MDE_ENABLE_TBB
 	using PropertySetMap =
 		MapAdapter<tbb::concurrent_hash_map<
 			const PropertySet *, IndexValue,
@@ -1077,12 +1077,12 @@ public:
 
 	using UnaryOperationMap = OperationMap<IndexValue>;
 	using BinaryOperationMap = OperationMap<OperationNode>;
-	using RefList = typename Nesting::LHFReferenceList;
+	using RefList = typename Nesting::MDEReferenceList;
 
 protected:
 	RefList reflist;
 
-#ifdef LHF_ENABLE_PERFORMANCE_METRICS
+#ifdef MDE_ENABLE_PERFORMANCE_METRICS
 	PerformanceStatistics stat;
 	HashMap<String, OperationPerf> perf;
 #endif
@@ -1100,31 +1100,31 @@ protected:
 		}
 
 		bool is_evicted() const {
-#ifdef LHF_ENABLE_EVICTION
+#ifdef MDE_ENABLE_EVICTION
 			return ptr.get() == nullptr;
 #else
 			return false;
 #endif
 		}
 
-#ifdef LHF_ENABLE_EVICTION
+#ifdef MDE_ENABLE_EVICTION
 
 		void evict() {
-			__LHF_ASSERT(is_present(),
+			__MDE_ASSERT(is_present(),
 				"Tried to evict an already absent property set")
 			ptr.release();
 		}
 
 		void reassign(Ptr &&p) {
-			__LHF_ASSERT(!is_present(),
+			__MDE_ASSERT(!is_present(),
 				"Tried to reassign when a property set is already present");
 			ptr.reset(p);
 		}
 
 		void swap(PropertySetHolder &p) {
-			__LHF_ASSERT(!is_present(),
+			__MDE_ASSERT(!is_present(),
 				"Tried to reassign when a property set is already present");
-			__LHF_ASSERT(p.is_present(),
+			__MDE_ASSERT(p.is_present(),
 				"Attempted to swap to a null pointer");
 			ptr.swap(p.ptr);
 		}
@@ -1132,7 +1132,7 @@ protected:
 #endif
 	};
 
-#if defined(LHF_ENABLE_TBB)
+#if defined(MDE_ENABLE_TBB)
 
 	class PropertySetStorage {
 	protected:
@@ -1175,7 +1175,7 @@ protected:
 
 	};
 
-#elif defined(LHF_ENABLE_PARALLEL)
+#elif defined(MDE_ENABLE_PARALLEL)
 
 	class PropertySetStorage {
 	protected:
@@ -1231,7 +1231,7 @@ protected:
 
 		Index push_back(PropertySetHolder &&p) {
 			WriteLock m(mutex);
-			__LHF_ASSERT(!data.empty(), "Internal error: no storage blocks avaialable.");
+			__MDE_ASSERT(!data.empty(), "Internal error: no storage blocks avaialable.");
 			if (data.back().size() >= BLOCK_SIZE) {
 				WriteLock r(realloc_mutex);
 				data.push_back({});
@@ -1319,9 +1319,9 @@ protected:
 	 * @param[in]  b     The index of the second set.
 	 */
 	void store_subset(const Index &a, const Index &b) {
-		LHF_PROPERTY_SET_PAIR_VALID(a, b)
-		LHF_PROPERTY_SET_PAIR_UNEQUAL(a, b)
-		__lhf_calc_functime(stat);
+		MDE_PROPERTY_SET_PAIR_VALID(a, b)
+		MDE_PROPERTY_SET_PAIR_UNEQUAL(a, b)
+		__mde_calc_functime(stat);
 
 		// We need to maintain the operation pair in index-order here as well.
 		if (a > b) {
@@ -1332,7 +1332,7 @@ protected:
 	}
 
 	/**
-	 * @brief      Removes all data from the LHF.
+	 * @brief      Removes all data from the MDE.
 	 */
 	virtual void clear() {
 		property_sets.clear();
@@ -1344,7 +1344,7 @@ protected:
 	}
 
 public:
-	explicit LatticeHashForest(RefList reflist = {}): reflist(reflist) {
+	explicit MDENode(RefList reflist = {}): reflist(reflist) {
 		// INSERT EMPTY SET AT INDEX 0
 		register_set({ });
 	}
@@ -1354,7 +1354,7 @@ public:
 	}
 
 	/**
-	 * @brief      Resets state of the LHF to the default.
+	 * @brief      Resets state of the MDE to the default.
 	 */
 	void clear_and_initialize() {
 		clear();
@@ -1371,7 +1371,7 @@ public:
 	 * @return     Enum value telling if it's a subset, superset or unknown
 	 */
 	SubsetRelation is_subset(const Index &a, const Index &b) const {
-		LHF_PROPERTY_SET_PAIR_VALID(a, b)
+		MDE_PROPERTY_SET_PAIR_VALID(a, b)
 
 		auto i = subsets.find({a.value, b.value});
 
@@ -1393,26 +1393,26 @@ public:
 	 * @todo          Check whether the cache hit check can be removed.
 	 */
 	Index register_set_single(const PropertyElement &c) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		PropertySetHolder new_set = PropertySetHolder(new PropertySet{c});
 
 		auto result = property_set_map.find(new_set.get());
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			Index ret = property_sets.push_back(std::move(new_set));
 			property_set_map.insert(std::make_pair(property_sets.at(ret).get(), ret.value));
 
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).swap(new_set);
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			return Index(result.get());
 		}
 	}
@@ -1428,13 +1428,13 @@ public:
 	 * @return     Index of the newly created set.
 	 */
 	Index register_set_single(const PropertyElement &c, bool &cold) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		PropertySetHolder new_set = PropertySetHolder(new PropertySet{c});
 		auto result = property_set_map.find(new_set.get());
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			Index ret = property_sets.push_back(std::move(new_set));
 			property_set_map.insert(std::make_pair(property_sets.at(ret).get(), ret.value));
@@ -1442,13 +1442,13 @@ public:
 			cold = true;
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).swap(new_set);
 			cold = false;
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			cold = false;
 			return Index(result.get());
 		}
@@ -1478,44 +1478,44 @@ public:
 
 	template <bool disable_integrity_check = false>
 	Index register_set(const PropertySet &c) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		if (!disable_integrity_check) {
-			LHF_PROPERTY_SET_INTEGRITY_VALID(c);
+			MDE_PROPERTY_SET_INTEGRITY_VALID(c);
 		}
 
 		auto result = property_set_map.find(&c);
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			PropertySetHolder new_set(new PropertySet(c));
 			Index ret = property_sets.push_back(std::move(new_set));
 			property_set_map.insert(std::make_pair(property_sets.at(ret).get(), ret.value));
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).reassign(new PropertySet(c));
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			return Index(result.get());
 		}
 	}
 
 	template <bool disable_integrity_check = false>
 	Index register_set(const PropertySet &c, bool &cold) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		if (!disable_integrity_check) {
-			LHF_PROPERTY_SET_INTEGRITY_VALID(c);
+			MDE_PROPERTY_SET_INTEGRITY_VALID(c);
 		}
 
 		auto result = property_set_map.find(&c);
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			PropertySetHolder new_set(new PropertySet(c));
 			Index ret = property_sets.push_back(std::move(new_set));
@@ -1524,13 +1524,13 @@ public:
 			cold = true;
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).reassign(new PropertySet(c));
 			cold = false;
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			cold = false;
 			return Index(result.get());
 		}
@@ -1538,44 +1538,44 @@ public:
 
 	template <bool disable_integrity_check = false>
 	Index register_set(PropertySet &&c) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		if (!disable_integrity_check) {
-			LHF_PROPERTY_SET_INTEGRITY_VALID(c);
+			MDE_PROPERTY_SET_INTEGRITY_VALID(c);
 		}
 
 		auto result = property_set_map.find(&c);
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			PropertySetHolder new_set(new PropertySet(std::move(c)));
 			Index ret = property_sets.push_back(std::move(new_set));
 			property_set_map.insert(std::make_pair(property_sets.at(ret).get(), ret.value));
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).reassign(new PropertySet(c));
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			return Index(result.get());
 		}
 	}
 
 	template <bool disable_integrity_check = false>
 	Index register_set(PropertySet &&c, bool &cold) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		if (!disable_integrity_check) {
-			LHF_PROPERTY_SET_INTEGRITY_VALID(c);
+			MDE_PROPERTY_SET_INTEGRITY_VALID(c);
 		}
 
 		auto result = property_set_map.find(&c);
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			PropertySetHolder new_set(new PropertySet(std::move(c)));
 			Index ret = property_sets.push_back(std::move(new_set));
@@ -1584,13 +1584,13 @@ public:
 			cold = true;
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).reassign(new PropertySet(c));
 			cold = false;
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			cold = false;
 			return Index(result.get());
 		}
@@ -1598,74 +1598,74 @@ public:
 
 	template<typename Iterator, bool disable_integrity_check = false>
 	Index register_set(Iterator begin, Iterator end) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		PropertySetHolder new_set(new PropertySet(begin, end));
 
 		if (!disable_integrity_check) {
-			LHF_PROPERTY_SET_INTEGRITY_VALID(*new_set.get());
+			MDE_PROPERTY_SET_INTEGRITY_VALID(*new_set.get());
 		}
 
 		auto result = property_set_map.find(new_set.get());
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			Index ret = property_sets.push_back(std::move(new_set));
 			property_set_map.insert(std::make_pair(property_sets.at(ret).get(), ret.value));
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).reassign(std::move(new_set));
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			return Index(result.get());
 		}
 	}
 
 	template<typename Iterator, bool disable_integrity_check = false>
 	Index register_set(Iterator begin, Iterator end, bool &cold) {
-		__lhf_calc_functime(stat);
+		__mde_calc_functime(stat);
 
 		PropertySetHolder new_set(new PropertySet(begin, end));
 
 		if (!disable_integrity_check) {
-			LHF_PROPERTY_SET_INTEGRITY_VALID(*new_set.get());
+			MDE_PROPERTY_SET_INTEGRITY_VALID(*new_set.get());
 		}
 
 		auto result = property_set_map.find(new_set.get());
 
 		if (!result.is_present()) {
-			LHF_PERF_INC(property_sets, cold_misses);
+			MDE_PERF_INC(property_sets, cold_misses);
 
 			Index ret = property_sets.push_back(std::move(new_set));
 			property_set_map.insert(std::make_pair(property_sets.at(ret).get(), ret.value));
 			cold = true;
 			return ret;
 		}
-		LHF_EVICTION(else if (is_evicted(result.get())) {
+		MDE_EVICTION(else if (is_evicted(result.get())) {
 			property_sets.at_mutable(result.get()).reassign(std::move(new_set));
 			cold = false;
 			return Index(result.get());
 		})
 		else {
-			LHF_PERF_INC(property_sets, hits);
+			MDE_PERF_INC(property_sets, hits);
 			cold = false;
 			return Index(result.get());
 		}
 	}
 
-#ifdef LHF_ENABLE_EVICTION
+#ifdef MDE_ENABLE_EVICTION
 	bool is_evicted(const Index &index) const {
 		return property_sets.at(index.value).is_evicted();
 	}
 #endif
 
-#ifdef LHF_ENABLE_EVICTION
+#ifdef MDE_ENABLE_EVICTION
 	void evict_set(const Index &index) {
-		__LHF_ASSERT(!index.is_empty(),
+		__MDE_ASSERT(!index.is_empty(),
 			"Tried to evict the empty set");
 		property_sets.at_mutable(index.value).evict();
 	}
@@ -1679,9 +1679,9 @@ public:
 	 * @return     The property set.
 	 */
 	inline const PropertySet &get_value(const Index &index) const {
-		LHF_PROPERTY_SET_INDEX_VALID(index);
-#if defined(LHF_DEBUG) && defined(LHF_ENABLE_EVICTION)
-		__LHF_ASSERT(!is_evicted(index),
+		MDE_PROPERTY_SET_INDEX_VALID(index);
+#if defined(MDE_DEBUG) && defined(MDE_ENABLE_EVICTION)
+		__MDE_ASSERT(!is_evicted(index),
 			"Tried to access an evicted set");
 #endif
 		return *property_sets.at(index.value).get();
@@ -1689,7 +1689,7 @@ public:
 
 	/**
 	 * @brief      Returns the total number of property sets currently in the
-	 *             LHF.
+	 *             MDE.
 	 *
 	 * @return     The count.
 	 */
@@ -1771,7 +1771,7 @@ public:
 
 		const PropertySet &s = get_value(index);
 
-		if (s.size() <= LHF_SORTED_VECTOR_BINARY_SEARCH_THRESHOLD) {
+		if (s.size() <= MDE_SORTED_VECTOR_BINARY_SEARCH_THRESHOLD) {
 			for (const PropertyElement &i : s) {
 				if (equal_key(i, p)) {
 					return OptionalRef<PropertyElement>(i);
@@ -1814,7 +1814,7 @@ public:
 
 		const PropertySet &s = get_value(index);
 
-		if (s.size() <= LHF_SORTED_VECTOR_BINARY_SEARCH_THRESHOLD) {
+		if (s.size() <= MDE_SORTED_VECTOR_BINARY_SEARCH_THRESHOLD) {
 			for (PropertyElement i : s) {
 				if (equal_key(i, prop)) {
 					return true;
@@ -1849,21 +1849,21 @@ public:
 	 *
 	 * @return     Index of the new property set.
 	 */
-	LHF_BINARY_NESTED_OPERATION(set_union)
+	MDE_BINARY_NESTED_OPERATION(set_union)
 	Index set_union(const Index &_a, const Index &_b) {
-		LHF_PROPERTY_SET_PAIR_VALID(_a, _b);
-		__lhf_calc_functime(stat);
+		MDE_PROPERTY_SET_PAIR_VALID(_a, _b);
+		__mde_calc_functime(stat);
 
 		if (_a == _b) {
-			LHF_PERF_INC(unions, equal_hits);
+			MDE_PERF_INC(unions, equal_hits);
 			return Index(_a);
 		}
 
 		if (is_empty(_a)) {
-			LHF_PERF_INC(unions, empty_hits);
+			MDE_PERF_INC(unions, empty_hits);
 			return Index(_b);
 		} else if (is_empty(_b)) {
-			LHF_PERF_INC(unions,empty_hits);
+			MDE_PERF_INC(unions,empty_hits);
 			return Index(_a);
 		}
 
@@ -1873,16 +1873,16 @@ public:
 		SubsetRelation r = is_subset(a, b);
 
 		if (r == SUBSET) {
-			LHF_PERF_INC(unions, subset_hits);
+			MDE_PERF_INC(unions, subset_hits);
 			return Index(b);
 		} else if (r == SUPERSET) {
-			LHF_PERF_INC(unions, subset_hits);
+			MDE_PERF_INC(unions, subset_hits);
 			return Index(a);
 		}
 
 		auto result = unions.find({a.value, b.value});
 
-		if (!result.is_present() LHF_EVICTION(|| is_evicted(result.get()))) {
+		if (!result.is_present() MDE_EVICTION(|| is_evicted(result.get()))) {
 			PropertySet new_set;
 			const PropertySet &first = get_value(a);
 			const PropertySet &second = get_value(b);
@@ -1897,41 +1897,41 @@ public:
 
 			while (cursor_1 != cursor_end_1) {
 				if (cursor_2 == cursor_end_2) {
-					LHF_PUSH_RANGE(new_set, cursor_1, cursor_end_1);
+					MDE_PUSH_RANGE(new_set, cursor_1, cursor_end_1);
 					break;
 				}
 
 				if (less(*cursor_2, *cursor_1)) {
-					LHF_PUSH_ONE(new_set, *cursor_2);
+					MDE_PUSH_ONE(new_set, *cursor_2);
 					cursor_2++;
 				} else {
 					if (!(less(*cursor_1, *cursor_2))) {
 						if constexpr (Nesting::is_nested) {
 							PropertyElement new_elem =
-								LHF_PERFORM_BINARY_NESTED_OPERATION(
+								MDE_PERFORM_BINARY_NESTED_OPERATION(
 									set_union, reflist, *cursor_1, *cursor_2);
-							LHF_PUSH_ONE(new_set, new_elem);
+							MDE_PUSH_ONE(new_set, new_elem);
 						} else {
-							LHF_PUSH_ONE(new_set, *cursor_1);
+							MDE_PUSH_ONE(new_set, *cursor_1);
 						}
 						cursor_2++;
 					} else {
-						LHF_PUSH_ONE(new_set, *cursor_1);
+						MDE_PUSH_ONE(new_set, *cursor_1);
 					}
 					cursor_1++;
 				}
 			}
 
-			LHF_PUSH_RANGE(new_set, cursor_2, cursor_end_2);
+			MDE_PUSH_RANGE(new_set, cursor_2, cursor_end_2);
 
 			bool cold = false;
 			Index ret;
 
-			LHF_EVICTION(if (result.is_present() && is_evicted(result.get())) {
+			MDE_EVICTION(if (result.is_present() && is_evicted(result.get())) {
 				ret = result.get();
 				property_sets.at_mutable(ret).reassign(new PropertySet(std::move(new_set)));
 			} else) {
-				ret = LHF_REGISTER_SET_INTERNAL(std::move(new_set), cold);
+				ret = MDE_REGISTER_SET_INTERNAL(std::move(new_set), cold);
 
 				unions.insert({{a.value, b.value}, ret.value});
 
@@ -1946,14 +1946,14 @@ public:
 			}
 
 			if (cold) {
-				LHF_PERF_INC(unions, cold_misses);
+				MDE_PERF_INC(unions, cold_misses);
 			} else {
-				LHF_PERF_INC(unions, edge_misses);
+				MDE_PERF_INC(unions, edge_misses);
 			}
 
 			return Index(ret);
 		} else {
-			LHF_PERF_INC(unions, hits);
+			MDE_PERF_INC(unions, hits);
 			return Index(result.get());
 		}
 	}
@@ -1981,27 +1981,27 @@ public:
 	 *
 	 * @return     Index of the new PropertySet.
 	 */
-	LHF_BINARY_NESTED_OPERATION(set_difference)
+	MDE_BINARY_NESTED_OPERATION(set_difference)
 	Index set_difference(const Index &a, const Index &b) {
-		LHF_PROPERTY_SET_PAIR_VALID(a, b);
-		__lhf_calc_functime(stat);
+		MDE_PROPERTY_SET_PAIR_VALID(a, b);
+		__mde_calc_functime(stat);
 
 		if (a == b) {
-			LHF_PERF_INC(differences, equal_hits);
+			MDE_PERF_INC(differences, equal_hits);
 			return Index(EMPTY_SET_VALUE);
 		}
 
 		if (is_empty(a)) {
-			LHF_PERF_INC(differences, empty_hits);
+			MDE_PERF_INC(differences, empty_hits);
 			return Index(EMPTY_SET_VALUE);
 		} else if (is_empty(b)) {
-			LHF_PERF_INC(differences, empty_hits);
+			MDE_PERF_INC(differences, empty_hits);
 			return Index(a);
 		}
 
 		auto result = differences.find({a.value, b.value});
 
-		if (!result.is_present() LHF_EVICTION(|| is_evicted(result.get()))) {
+		if (!result.is_present() MDE_EVICTION(|| is_evicted(result.get()))) {
 			PropertySet new_set;
 			const PropertySet &first = get_value(a);
 			const PropertySet &second = get_value(b);
@@ -2016,20 +2016,20 @@ public:
 
 			while (cursor_1 != cursor_end_1) {
 				if (cursor_2 == cursor_end_2) {
-					LHF_PUSH_RANGE(new_set, cursor_1, cursor_end_1);
+					MDE_PUSH_RANGE(new_set, cursor_1, cursor_end_1);
 					break;
 				}
 
 				if (less(*cursor_1, *cursor_2)) {
-					LHF_PUSH_ONE(new_set, *cursor_1);
+					MDE_PUSH_ONE(new_set, *cursor_1);
 					cursor_1++;
 				} else {
 					if (!(less(*cursor_2, *cursor_1))) {
 						if constexpr (Nesting::is_nested) {
 							PropertyElement new_elem =
-								LHF_PERFORM_BINARY_NESTED_OPERATION(
+								MDE_PERFORM_BINARY_NESTED_OPERATION(
 									set_difference, reflist, *cursor_1, *cursor_2);
-							LHF_PUSH_ONE(new_set, new_elem);
+							MDE_PUSH_ONE(new_set, new_elem);
 						}
 						cursor_1++;
 					}
@@ -2040,11 +2040,11 @@ public:
 			bool cold = false;
 			Index ret;
 
-			LHF_EVICTION(if (result.is_present() && is_evicted(result.get())) {
+			MDE_EVICTION(if (result.is_present() && is_evicted(result.get())) {
 				ret = result.get();
 				property_sets.at_mutable(ret).reassign(new PropertySet(std::move(new_set)));
 			} else) {
-				ret = LHF_REGISTER_SET_INTERNAL(std::move(new_set), cold);
+				ret = MDE_REGISTER_SET_INTERNAL(std::move(new_set), cold);
 				differences.insert({{a.value, b.value}, ret.value});
 
 				if (ret != a) {
@@ -2059,14 +2059,14 @@ public:
 			}
 
 			if (cold) {
-				LHF_PERF_INC(differences, cold_misses);
+				MDE_PERF_INC(differences, cold_misses);
 			} else {
-				LHF_PERF_INC(differences, edge_misses);
+				MDE_PERF_INC(differences, edge_misses);
 			}
 
 			return Index(ret);
 		} else {
-			LHF_PERF_INC(differences, hits);
+			MDE_PERF_INC(differences, hits);
 			return Index(result.get());
 		}
 	}
@@ -2103,7 +2103,7 @@ public:
 
 		for (;cursor_1 != cursor_end_1; cursor_1++) {
 			if (!PropertyEqual()(cursor_1->get_key(), p)) {
-				LHF_PUSH_ONE(new_set, *cursor_1);
+				MDE_PUSH_ONE(new_set, *cursor_1);
 			}
 		}
 		return register_set<true>(std::move(new_set));
@@ -2118,18 +2118,18 @@ public:
 	 *
 	 * @return     Index of the new property set.
 	 */
-	LHF_BINARY_NESTED_OPERATION(set_intersection)
+	MDE_BINARY_NESTED_OPERATION(set_intersection)
 	Index set_intersection(const Index &_a, const Index &_b) {
-		LHF_PROPERTY_SET_PAIR_VALID(_a, _b);
-		__lhf_calc_functime(stat);
+		MDE_PROPERTY_SET_PAIR_VALID(_a, _b);
+		__mde_calc_functime(stat);
 
 		if (_a == _b) {
-			LHF_PERF_INC(intersections, equal_hits);
+			MDE_PERF_INC(intersections, equal_hits);
 			return Index(_a);
 		}
 
 		if (is_empty(_a) || is_empty(_b)) {
-			LHF_PERF_INC(intersections, empty_hits);
+			MDE_PERF_INC(intersections, empty_hits);
 			return Index(EMPTY_SET_VALUE);
 		}
 
@@ -2139,16 +2139,16 @@ public:
 		SubsetRelation r = is_subset(a, b);
 
 		if (r == SUBSET) {
-			LHF_PERF_INC(intersections, subset_hits);
+			MDE_PERF_INC(intersections, subset_hits);
 			return Index(a);
 		} else if (r == SUPERSET) {
-			LHF_PERF_INC(intersections, subset_hits);
+			MDE_PERF_INC(intersections, subset_hits);
 			return Index(b);
 		}
 
 		auto result = intersections.find({a.value, b.value});
 
-		if (!result.is_present() LHF_EVICTION(|| is_evicted(result.get()))) {
+		if (!result.is_present() MDE_EVICTION(|| is_evicted(result.get()))) {
 			PropertySet new_set;
 			const PropertySet &first = get_value(a);
 			const PropertySet &second = get_value(b);
@@ -2169,10 +2169,10 @@ public:
 					if (!(less(*cursor_2, *cursor_1))) {
 						if constexpr (Nesting::is_nested) {
 							PropertyElement new_elem =
-								LHF_PERFORM_BINARY_NESTED_OPERATION(set_intersection, reflist, *cursor_1, *cursor_2);
-							LHF_PUSH_ONE(new_set, new_elem);
+								MDE_PERFORM_BINARY_NESTED_OPERATION(set_intersection, reflist, *cursor_1, *cursor_2);
+							MDE_PUSH_ONE(new_set, new_elem);
 						} else {
-							LHF_PUSH_ONE(new_set, *cursor_1);
+							MDE_PUSH_ONE(new_set, *cursor_1);
 						}
 						cursor_1++;
 					}
@@ -2183,11 +2183,11 @@ public:
 			bool cold = false;
 			Index ret;
 
-			LHF_EVICTION(if (result.is_present() && is_evicted(result.get())) {
+			MDE_EVICTION(if (result.is_present() && is_evicted(result.get())) {
 				ret = result.get();
 				property_sets.at_mutable(ret).reassign(new PropertySet(std::move(new_set)));
 			} else){
-				ret = LHF_REGISTER_SET_INTERNAL(std::move(new_set), cold);
+				ret = MDE_REGISTER_SET_INTERNAL(std::move(new_set), cold);
 				intersections.insert({{a.value, b.value}, ret.value});
 
 				if (ret != a) {
@@ -2201,14 +2201,14 @@ public:
 			}
 
 			if (cold) {
-				LHF_PERF_INC(intersections, cold_misses);
+				MDE_PERF_INC(intersections, cold_misses);
 			} else {
-				LHF_PERF_INC(intersections, edge_misses);
+				MDE_PERF_INC(intersections, edge_misses);
 			}
 			return Index(ret);
 		}
 
-		LHF_PERF_INC(intersections, hits);
+		MDE_PERF_INC(intersections, hits);
 		return Index(result.get());
 	}
 
@@ -2232,8 +2232,8 @@ public:
 		Index s,
 		std::function<bool(const PropertyElement &)> filter_func,
 		UnaryOperationMap &cache) {
-		LHF_PROPERTY_SET_INDEX_VALID(s);
-		__lhf_calc_functime(stat);
+		MDE_PROPERTY_SET_INDEX_VALID(s);
+		__mde_calc_functime(stat);
 
 		if (is_empty(s)) {
 			return s;
@@ -2241,34 +2241,34 @@ public:
 
 		auto result = cache.find(s.value);
 
-		if (!result.is_present() LHF_EVICTION(|| is_evicted(result.get()))) {
+		if (!result.is_present() MDE_EVICTION(|| is_evicted(result.get()))) {
 			PropertySet new_set;
 			for (const PropertyElement &value : get_value(s)) {
 				if (filter_func(value)) {
-					LHF_PUSH_ONE(new_set, value);
+					MDE_PUSH_ONE(new_set, value);
 				}
 			}
 
 			bool cold;
 			Index ret;
 
-			LHF_EVICTION(if (result.is_present() && is_evicted(result.get())) {
+			MDE_EVICTION(if (result.is_present() && is_evicted(result.get())) {
 				ret = result.get();
 				property_sets.at_mutable(ret).reassign(new PropertySet(std::move(new_set)));
 			} else) {
-				ret = LHF_REGISTER_SET_INTERNAL(std::move(new_set), cold);
+				ret = MDE_REGISTER_SET_INTERNAL(std::move(new_set), cold);
 				cache.insert(std::make_pair(s.value, ret.value));
 			}
 
 			if (cold) {
-				LHF_PERF_INC(filter, cold_misses);
+				MDE_PERF_INC(filter, cold_misses);
 			} else {
-				LHF_PERF_INC(filter, edge_misses);
+				MDE_PERF_INC(filter, edge_misses);
 			}
 
 			return Index(ret);
 		} else {
-			LHF_PERF_INC(filter, hits);
+			MDE_PERF_INC(filter, hits);
 			return Index(result.get());
 		}
 	}
@@ -2295,7 +2295,7 @@ public:
 		return property_set_to_string(get_value(idx));
 	}
 
-#ifdef LHF_ENABLE_SERIALIZATION
+#ifdef MDE_ENABLE_SERIALIZATION
 
 	const RefList &get_reflist() const {
 		return reflist;
@@ -2365,7 +2365,7 @@ public:
 #endif
 
 	/**
-	 * @brief      Dumps the current state of the LHF to a string.
+	 * @brief      Dumps the current state of the MDE to a string.
 	 */
 	String dump() const {
 		std::stringstream s;
@@ -2400,15 +2400,15 @@ public:
 		return s.str();
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const LatticeHashForest& obj) {
+	friend std::ostream& operator<<(std::ostream& os, const MDENode& obj) {
 		os << obj.dump();
 		return os;
 	}
 
-#ifdef LHF_ENABLE_PERFORMANCE_METRICS
+#ifdef MDE_ENABLE_PERFORMANCE_METRICS
 	/**
 	 * @brief      Dumps performance information as a string.
-	 * @note       Conditionally enabled if `LHF_ENABLE_PERFORMANCE_METRICS` is
+	 * @note       Conditionally enabled if `MDE_ENABLE_PERFORMANCE_METRICS` is
 	 *             set.
 	 * @return     String containing performance information as a human-readable
 	 *             string.
@@ -2425,16 +2425,16 @@ public:
 	}
 #endif
 
-}; // END LatticeHashForest
+}; // END MDENode
 
 
 /// Check whether the index is a valid index within the current state of the
 /// deduplicator
-#define LHF_PROPERTY_INDEX_VALID(__index) { \
+#define MDE_PROPERTY_INDEX_VALID(__index) { \
 	_Pragma("GCC diagnostic push"); \
 	_Pragma("GCC diagnostic ignored \"-Wtype-limits\"") \
 	if ((__index.value) < 0 || ((__index.value) > property_list.size() - 1)) { \
-		throw __LHF_EXCEPT("Invalid index supplied"); \
+		throw __MDE_EXCEPT("Invalid index supplied"); \
 	} \
 	_Pragma("GCC diagnostic pop") \
 }
@@ -2442,7 +2442,7 @@ public:
 /**
  * @brief      An straightforward deduplicator for scalar values. It does not
  *             implement any special operations besides deduplication.
- *             Unlike LHF, this does NOT enforce constness on the data items
+ *             Unlike MDE, this does NOT enforce constness on the data items
  *             registered. However, a mutable access must always be marked
  *
  * @tparam     PropertyT      The type of the property.
@@ -2594,7 +2594,7 @@ struct Deduplicator {
 	}
 
 	const PropertyT &get_value(Index id) const {
-		LHF_PROPERTY_INDEX_VALID(id);
+		MDE_PROPERTY_INDEX_VALID(id);
 		return *property_list[id.value].get();
 	}
 
@@ -2603,7 +2603,7 @@ struct Deduplicator {
 	* as a workaround for integration into existing systems.
 	*/
 	const PropertyT *get_value_ptr(Index id) const {
-		LHF_PROPERTY_INDEX_VALID(id);
+		MDE_PROPERTY_INDEX_VALID(id);
 		return property_list[id.value].get();
 	}
 

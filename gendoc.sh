@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This file generates documentation for LHF and other tools that are present in
+# This file generates documentation for MDE and other tools that are present in
 # this project.
 
 set -o errexit

@@ -1,5 +1,5 @@
 #include "common.hpp"
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -25,18 +25,18 @@ struct Payload {
 
 template <>
 struct std::hash<Payload> {
-	lhf::Size operator()(const Payload& k) const {
-		lhf::Size ret = std::hash<int>()(k.a);
-		ret = lhf::compose_hash(ret, std::hash<int>()(k.b));
-		ret = lhf::compose_hash(ret, std::hash<std::string>()(k.c));
+	mde::Size operator()(const Payload& k) const {
+		mde::Size ret = std::hash<int>()(k.a);
+		ret = mde::compose_hash(ret, std::hash<int>()(k.b));
+		ret = mde::compose_hash(ret, std::hash<std::string>()(k.c));
 		return ret;
 	}
 };
 
-using Dedup = lhf::Deduplicator<Payload>;
+using Dedup = mde::Deduplicator<Payload>;
 using Index = Dedup::Index;
 
-TEST(LHF_DeduplicatorBasicChecks, dedup_insertion) {
+TEST(MDE_DeduplicatorBasicChecks, dedup_insertion) {
 	Dedup dedup;
 
 	Index r1 = dedup.register_value(Payload(4, 2, "abc"));
@@ -59,7 +59,7 @@ TEST(LHF_DeduplicatorBasicChecks, dedup_insertion) {
 	std::cout << dedup.dump() << std::endl;
 }
 
-TEST(LHF_DeduplicatorBasicChecks, dedup_ptr_insertion) {
+TEST(MDE_DeduplicatorBasicChecks, dedup_ptr_insertion) {
 	Dedup dedup;
 
 	Payload *res1 = new Payload(3, 4, "pqr");

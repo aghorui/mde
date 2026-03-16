@@ -1,4 +1,4 @@
-LHF Documentation and Design Document
+MDE Documentation and Design Document
 =====================================
 ```
 Last updated: 2025-06-28
@@ -7,29 +7,29 @@ Meant for:    Version 0.3.1
 
 # Note
 
-If you are only interested in how to apply the C++ implementation of LHF into
+If you are only interested in how to apply the C++ implementation of MDE into
 your program, please skip to the [Usage](#usage) section.
 
 Information presented here is not necessarily exhaustive and it is recommended
 that you go through the source code, especially if you would like to extend the
 library. **If you would like to look at the API documentation, please go to the
-[doxygen documentation for LHF][doxygen_doc].**
+[doxygen documentation for MDE][doxygen_doc].**
 
 # Introduction
 
-LatticeHashForest (LHF) is a data representation caching mechanism that is meant
-to facilitate aggressive caching of redundant data, and operations performed on
-such redundant data. LHF aims to reduce both the memory footprint as well as the
-CPU time used by an application for every operation performed on its data when
-compared to naive storage and operations on it by reducing each unique instance
-of data to a unique integer identifier, and reducing the cost of performing
-any bulk operation on data as much as possible.
+Multilevel Deduplication Engine (MDE) is a data representation caching mechanism
+that is meant to facilitate aggressive caching of redundant data, and operations
+performed on such redundant data. MDE aims to reduce both the memory footprint
+as well as the CPU time used by an application for every operation performed on
+its data when compared to naive storage and operations on it by reducing each
+unique instance of data to a unique integer identifier, and reducing the cost of
+performing any bulk operation on data as much as possible.
 
-The current LHF toolset consists of a C++ implementation of the mechanism, and
+The current MDE toolset consists of a C++ implementation of the mechanism, and
 a Python script that generates an automatically set-up interface from a given
 input description.
 
-This document details the motivation, the features, and the usage of LHF, and
+This document details the motivation, the features, and the usage of MDE, and
 describes future work that needs to be done.
 
 # Motivation
@@ -60,12 +60,12 @@ sensitivity and context sensitivity this results in a combinatorial blow up of
 the information in the analysis, causing it to be not scalable.
 
 There have been many efforts to make such analyses cheap, but with limited
-success. LatticeHashForest aims to remove at the very least the trivial
+success. MDE aims to remove at the very least the trivial
 redundancies, both in terms of data and operations, in order to facilitate
 such situations. It provides a generalized library that can be extended to
 fit processing requirements of such situations.
 
-The second motivation for LatticeHashForest comes from experimenting with how to
+The second motivation for MDE comes from experimenting with how to
 group data in a way that allows for maximum caching and traditional data
 structure benefits. In points-to analysis, for instance, there are multiple ways
 to represent the fact that some pointer A points to some location B. One is
@@ -97,7 +97,7 @@ locations, such as to `{ (A -> 2), (C -> 1) }` in the above example, will incur
 a cost of re-caching for only the points-to data, and not the entire data
 represented by the set.
 
-LatticeHashForest provides the infrastructure for exploration of such avenues
+MDE provides the infrastructure for exploration of such avenues
 for information processing optimization and a generalized framework for
 implementing such optimizations.
 
@@ -107,20 +107,20 @@ An idea very similar to the one presented here is shown in a paper from 2021
 (*Mohamad Barbar and Yulei Sui. "Hash Consed Points-To Sets". In: International
 Static Analysis Symposium. Springer. 2021, pp. 25–48*). It shows a very similar
 mechanism to the one mentioned here, however their implementation does not
-implement any form of "multilevel" caching like the way it is in LHF (described
+implement any form of "multilevel" caching like the way it is in MDE (described
 in later sections as "nesting"), and is specific only to representing points-to
 information, rather than allowing for a generalized interface for caching
 records of data. The caching takes place only with the set of pointees rather
 than the entire points-to set.
 
-# General Structure of LHF
+# General Structure of MDE
 
-Since most of the presently available use-cases happen on aggregate values, LHF
+Since most of the presently available use-cases happen on aggregate values, MDE
 considers a unit of data to be an aggregate of indivisible values. These
 indivisible values are called *properties*, and the aggregate is called a
 *property set*.
 
-The following guarantees are given to the user by an implementation of LHF
+The following guarantees are given to the user by an implementation of MDE
 instantiated with a given type parameter `T`:
 
 1. Map each and every property set to a to a unique integer identifier.
@@ -132,16 +132,16 @@ instantiated with a given type parameter `T`:
    the aforementioned unique identifiers, to a new unique identifier that
    represents the result of the operation.
 
-4. All values represented by LHF, including the values generated from operations
+4. All values represented by MDE, including the values generated from operations
    will be closed under `T`.
 
 The underlying implementation employs several rules, techniques and data
 structures to make the functionality efficient while maintaining the above
 invariants.
 
-![LHF Design Diagram](./media/lhf.svg)
+![MDE Design Diagram](./media/mde.svg)
 
-The current design of LHF consists of the following components:
+The current design of MDE consists of the following components:
 
 * **Property Sets**:
 
@@ -156,18 +156,18 @@ The current design of LHF consists of the following components:
 * **Property Elements**:
 
   Property elements refer to the elements of property sets. Based on the
-  parameters the LHF has been instantiated with, they may simply be an
+  parameters the MDE has been instantiated with, they may simply be an
   encapsulation of the property, or they may be used to enable *nesting
   behaviour* by storing unique identifiers to other sets.
 
 * **Unique Identifiers or Indices**:
 
   Each property set is represented with a integer that is unique in the domain
-  of each LHF. This is called the Index. The unique identifier is decided on by
+  of each MDE. This is called the Index. The unique identifier is decided on by
   the property set storage data structure.
 
   The index guarantees correspondence to a unique value within the domain
-  specified by the LHF instantiation, in a similar manner to how memory pointers
+  specified by the MDE instantiation, in a similar manner to how memory pointers
   guarantee correspondence to a certain location in memory.
 
 * **Property Set Storage**:
@@ -181,7 +181,7 @@ The current design of LHF consists of the following components:
 
   This is the structure responsible for mapping a given property set to its
   corresponding unique identifier. This incurs an O(n) hashing cost and
-  therefore LHF is geared towards minimizing the amount of accesses to this
+  therefore MDE is geared towards minimizing the amount of accesses to this
   map as much as possible.
 
 * **Operation Maps**:
@@ -225,46 +225,46 @@ the namesake of this mechanism.
 *Information here may be reproduced from the earlier sections in light of the
 possibility that they may be skipped.*
 
-LHF is available as a header-only library, and can be included as follows.
+MDE is available as a header-only library, and can be included as follows.
 
 ```c++
-#include <lhf/lhf.h>
+#include <mde/mde.h>
 ```
 
-An LHF can then be directly created within the user program. The following
-program creates an LHF that stores sets of integers. Explanation for the types,
+An MDE can then be directly created within the user program. The following
+program creates an MDE that stores sets of integers. Explanation for the types,
 classes and functions used here are given later in this document.
 
 ```c++
 int main() {
     // It is recommended to use type aliases wherever needed.
-    using LHF = lhf::LatticeHashForest<int>;
-    using Index = LHF::Index;
+    using MDE = mde::MDENode<int>;
+    using Index = MDE::Index;
 
-    LHF l;
+    MDE l;
 
     Index a = l.register_set({ 1, 2, 3 });
     // ...
 }
 ```
 
-The `lhf::LatticeHashForest` class includes all of the facilities and data
+The `mde::MDENode` class includes all of the facilities and data
 structures that have been discussed in the earlier sections. The documentation
 of the API itself is available in the [doxygen documentation][doxygen_doc] or
-the source code itself. Each instance of an LHF is isolated and do not share
+the source code itself. Each instance of an MDE is isolated and do not share
 data.
 
-LatticeHashForests operate in terms of *sets of recursive values*. We call these
+MDENodes operate in terms of *sets of recursive values*. We call these
 values *properties*, and the sets are called `PropertySets`. The "base-case" of
 the mechanism contains no "recursive" properties and can be simply assumed to
 operate on a set of values. For example, something as simple as sets of unique
 integers. There are some more details in regards to how to use and retrieve data
 from `PropertySets`. These are covered in a later section.
 
-**All data retrieved from LHF is `const` and should be considered immutable,
+**All data retrieved from MDE is `const` and should be considered immutable,
 including `PropertySets` and `PropertyElements`.**
 
-The full template declaration of the LHF class is as follows:
+The full template declaration of the MDE class is as follows:
 
 ```c++
 template <
@@ -274,11 +274,11 @@ template <
     typename PropertyEqual = DefaultEqual<PropertyT>,
     typename PropertyPrinter = DefaultPrinter<PropertyT>,
     typename Nesting = NestingNone<PropertyT>>
-class LatticeHashForest {
+class MDENode {
      // ...
 ```
 
-For a data type to be used as a property (`PropertyT`) in LHF, it must be:
+For a data type to be used as a property (`PropertyT`) in MDE, it must be:
 
 * `PropertyLess`: Less-than comparable (`a < b`),
 * `PropertyHash`: Hashable,
@@ -296,7 +296,7 @@ for `DefaultPrinter` follow the interface dictated by `std::less`, `std::hash`,
 and `std::equal`. A user can therefore choose to define them as either explicit
 functors, or operator overloads (except for in the case of `std::hash`).
 
-`DefaultPrinter` is defined by the LHF library as follows:
+`DefaultPrinter` is defined by the MDE library as follows:
 
 ```c++
 template<typename T>
@@ -321,16 +321,16 @@ friend std::ostream& operator<<(std::ostream& os, const PropertyT& obj) {
 ```
 
 The above template parameters define the domain of values that can be
-represented by the LHF. The template parameter `Nesting` is discussed in a later
+represented by the MDE. The template parameter `Nesting` is discussed in a later
 section.
 
 ### Note on (Runtime) Instance Creation
 
-LHF, by design, stores and deduplicates values regardless of the overarching
+MDE, by design, stores and deduplicates values regardless of the overarching
 meaning of the data supplied to it (in other words, the "context"). This means
-that a single instance of an LHF class with a given set of template parameters
+that a single instance of an MDE class with a given set of template parameters
 is enough to store all values, and cover all use-cases within that domain of
-template parameters. Hence it would make more sense to *use LHFs as static,
+template parameters. Hence it would make more sense to *use MDEs as static,
 singleton classes*.
 
 Whether this fact should be statically enforced may be debatable, as this might
@@ -339,44 +339,44 @@ not necessarily cover every use-case.
 ## Indices
 
 Each property set is represented with a integer that is unique in the domain of
-each LHF. This is called an index. An index guarantees that it uniquely
-represents a certain value within the domain specified by the given LHF template
+each MDE. This is called an index. An index guarantees that it uniquely
+represents a certain value within the domain specified by the given MDE template
 instantiation.
 
 ```c++
-class LatticeHashForest {
+class MDENode {
    // ...
    struct Index {
       // ...
    };
 };
 
-class IntegerLHF = LatticeHashForest<int>;
+class IntegerMDE = MDENode<int>;
 
-using Index = IntegerLHF::Index;
+using Index = IntegerMDE::Index;
 ```
 
 ### Note
 
-Each template-instantiation of the LHF class exposes an `Index` type which is
+Each template-instantiation of the MDE class exposes an `Index` type which is
 used in all of its API functions. This statically ensures that indices belonging
-to a particular LHF class do not get used in any other LHF, which can likely
+to a particular MDE class do not get used in any other MDE, which can likely
 cause bugs.
 
-This however does not statically prevent two instances of the same LHF class
+This however does not statically prevent two instances of the same MDE class
 from exchanging indices, however this is not supposed to be a problem as there
 should'nt be any special reason to use two or more instances.
 
-## Inserting Data Into LHF
+## Inserting Data Into MDE
 
-One can register a given set of properties as a member in LHF by using the
+One can register a given set of properties as a member in MDE by using the
 `register_set` and `register_set_single` functions. Each set is currently
 defined as a **sorted vector of elements**.
 
 ```c++
-using LHF = lhf::LatticeHashForest<int>;
-using Index = LHF::Index;
-LHF l;
+using MDE = mde::MDENode<int>;
+using Index = MDE::Index;
+MDE l;
 
 Index a = l.register_set({ 1, 2, 3, 4, 9, 32, 33, 34 });
 Index b = l.register_set_single(1213);
@@ -391,13 +391,13 @@ A runtime check for the correctness of the input is present, and will throw an
 exception if the input set is found to be not in the proper form. This, of
 course, incurs a runtime cost.
 
-To disable it, you can define a macro called `LHF_DISABLE_INTEGRITY_CHECKS`
-before including the LHF header, or using your build system. Behaviour of the
-LHF is undefined if an unsorted set or a set with duplicates is supplied.
+To disable it, you can define a macro called `MDE_DISABLE_INTEGRITY_CHECKS`
+before including the MDE header, or using your build system. Behaviour of the
+MDE is undefined if an unsorted set or a set with duplicates is supplied.
 
 ```c++
-#define LHF_DISABLE_INTEGRITY_CHECKS
-#include <lhf/lhf.hpp>
+#define MDE_DISABLE_INTEGRITY_CHECKS
+#include <mde/mde.hpp>
 ```
 
 ### Note
@@ -409,19 +409,19 @@ insertion more efficient instead.
 
 ## Performing Operations on Data
 
-Operations on data registered in  in LHF accept 2 (or more) operands.
+Operations on data registered in  in MDE accept 2 (or more) operands.
 
-Several common operations on sets have been defined in the public API of LHF,
+Several common operations on sets have been defined in the public API of MDE,
 such as `set_union`, `set_intersection` and so on. Please refer to the API
 documentation for details. In the example below, we perform the union of two
 sets:
 
 ```c++
-Index a = lhf.register_set({1, 9, 1213, 2222});
-Index b = lhf.register_set_single(777);
-Index c = lhf.set_union(a, b);
+Index a = mde.register_set({1, 9, 1213, 2222});
+Index b = mde.register_set_single(777);
+Index c = mde.set_union(a, b);
 
-std::cout << lhf.property_set_to_string(c) << std::endl;
+std::cout << mde.property_set_to_string(c) << std::endl;
 ```
 
 Please consult the API documentation for a full listing of operations.
@@ -432,13 +432,13 @@ Property sets are a collection of `PropertyElements`. Currently, `PropertySets`
 are sorted vectors, and follow the same interface as an `std::vector`, thus it
 can be iterated on and so forth. However, it is recommended that you limit usage
 the interface to the following functions because the underlying implementation
-may change in the future. Please abstract away and extend the LHF class/API or
+may change in the future. Please abstract away and extend the MDE class/API or
 implement wrapper functions if they are required.
 
 * Iterators (`begin()` and `end()`)
 * `size()`
 
-All property sets obtained from an LHF will be read only, as mentioned earlier.
+All property sets obtained from an MDE will be read only, as mentioned earlier.
 
 The reason we use `PropertyElements` instead of `PropertyT` as the elements of
 `PropertySets` has to do with the implementation of nesting. However, the
@@ -462,10 +462,10 @@ necessarily exhaustive):
 To illustrate the above with an example:
 
 ```c++
-using LHF = lhf::LatticeHashForest<int>;
-using Index = LHF::Index;
-using Elem = LHF::PropertyElement;
-LHF l;
+using MDE = mde::MDENode<int>;
+using Index = MDE::Index;
+using Elem = MDE::PropertyElement;
+MDE l;
 
 Index a = l.register_set({ 1, 2, 3, 4, 9, 32, 33, 34 });
 
@@ -481,15 +481,15 @@ std::cout << "Sum: " << sum << std::endl;
 
 ## Debugging, Performance Metrics and Dumping Data
 
-The LHF implementation has some inbuilt provisions for debugging and profiling.
+The MDE implementation has some inbuilt provisions for debugging and profiling.
 These can be enabled with:
 
-* `LHF_ENABLE_DEBUG`: for debugging, and
-* `LHF_ENABLE_PERFORMANCE_METRICS`: for basic profiling.
+* `MDE_ENABLE_DEBUG`: for debugging, and
+* `MDE_ENABLE_PERFORMANCE_METRICS`: for basic profiling.
 
 The debugging switch enables a set of runtime checks that can be used to check
-the consistency of the data that is being provided to LHF, as well as internally
-within LHF. It also enables blocks of statements marked as debug-only.
+the consistency of the data that is being provided to MDE, as well as internally
+within MDE. It also enables blocks of statements marked as debug-only.
 
 The metrics that are enabled by the performance metrics switch are chosen based
 on their apparent usefulness for evaluation:
@@ -513,16 +513,16 @@ of good cache behaviour. These metrics are calculated for every operation (like
 In order to present this data in a human-readable format, the member function
 `dump_perf()` can be used to obtain a string representation.
 
-To dump the entire state of the LHF, you may simply use the `dump()` member
+To dump the entire state of the MDE, you may simply use the `dump()` member
 function.
 
 ```c++
-#define LHF_ENABLE_DEBUG
-#define LHF_ENABLE_PERFORMANCE_METRICS
-#include <lhf/lhf.hpp>
+#define MDE_ENABLE_DEBUG
+#define MDE_ENABLE_PERFORMANCE_METRICS
+#include <mde/mde.hpp>
 
 // ...
-    LHF l;
+    MDE l;
     // ...
     std::cout << l.dump() << std::endl;
     std::cout << l.dump_perf() << std::endl;
@@ -531,15 +531,15 @@ function.
 
 ## Nesting
 
-LHF's nesting mechanism allows one to build and represent complex data
-structures within LHF, while still allowing to maximally utilize the caching
-benefits of using LHF. Please go through the earlier (theory) sections to
+MDE's nesting mechanism allows one to build and represent complex data
+structures within MDE, while still allowing to maximally utilize the caching
+benefits of using MDE. Please go through the earlier (theory) sections to
 understand more about this.
 
-The way this is implemented is using the `Nesting` template parameter of LHF,
+The way this is implemented is using the `Nesting` template parameter of MDE,
 which accepts a trait-like class that contains all of the requirements for
 enabling the nesting behaviour. There are two nesting trait classes that are
-implemented within LHF:
+implemented within MDE:
 
 ### `NestingNone`
 
@@ -549,7 +549,7 @@ This implements the "base-case" of nesting, which is no nesting.
 NestingNone<PropertyT>
 ```
 
-In this case, the LHF operates in a fashion that is the same as what has been
+In this case, the MDE operates in a fashion that is the same as what has been
 seen until now in this document: a set storage and manipulation system.
 
 ### `NestingBase`
@@ -557,7 +557,7 @@ seen until now in this document: a set storage and manipulation system.
 This implements the standard nesting behaviour.
 
 ```c++
-NestingBase<PropertyT, (List of nested LHF Classes)>
+NestingBase<PropertyT, (List of nested MDE Classes)>
 ```
 
 To understand the way nesting works, let's take the example of an adjacency
@@ -578,20 +578,20 @@ value, and a set of values. The size of each element can increase by O(n) and
 is not constant. It induces a higher cost of hashing each element, comparing
 each element and storing each element. The nesting mechanism allows us the
 potential to do away with this cost by caching the nested set of values that we
-see in this example **into another LHF instance**.
+see in this example **into another MDE instance**.
 
 ```c++
-// The LHF that stores the adjacency lists. The "child".
-using AdjLists = lhf::LatticeHashForest<int>;
+// The MDE that stores the adjacency lists. The "child".
+using AdjLists = mde::MDENode<int>;
 using AdjListIndex = AdjLists::Index;
 
-// The LHF that stores the graph. The "parent".
-using Graphs = lhf::LatticeHashForest<int,
-    lhf::DefaultLess<int>,
-    lhf::DefaultHash<int>,
-    lhf::DefaultEqual<int>,
-    lhf::DefaultPrinter<int>,
-    lhf::NestingBase<int, AdjLists>>;
+// The MDE that stores the graph. The "parent".
+using Graphs = mde::MDENode<int,
+    mde::DefaultLess<int>,
+    mde::DefaultHash<int>,
+    mde::DefaultEqual<int>,
+    mde::DefaultPrinter<int>,
+    mde::NestingBase<int, AdjLists>>;
 using GraphIndex = Graphs::Index;
 ```
 
@@ -606,12 +606,12 @@ Graphs graphs(adjlists);
 
 What happens now is that `PropertyElements` are no longer simply a wrapper
 around a value, they now contain an additional list of data which are the
-**indices of each of the child LHFs that have been specified for nesting.** You
+**indices of each of the child MDEs that have been specified for nesting.** You
 may consider them to be a list of pointers, but the "pointers" in this case
 represent a unique value instead of a unique memory location.
 
 As an example of how to create property sets in this case, this recreates the
-graph representation in the above example in LHF:
+graph representation in the above example in MDE:
 
 ```c++
 AdjListIndex a1 = adjlists.register_set({ 2, 5, 7, 9 });
@@ -633,7 +633,7 @@ mechanism.
 
 For example, in the case of `set_union`, if we have sets `{ 1 -> A1, 2 -> A2 }`
 as `G1` and `{  2 -> A3, 3 -> A2 }` as `G2`, where `An` is the Index of a set in
-the adjacency list LHF, then the union of the two will be:
+the adjacency list MDE, then the union of the two will be:
 
 ```
 graphs.set_union(G1, G2) -->
@@ -660,23 +660,23 @@ thus are instead enforced informally in a similar fashion to interfaces in
 Golang (the compiler will individually detect missing requirements from the
 class.
 
-# Extending LHF
+# Extending MDE
 
-LHF in most cases will need to be extended to fit the use-case of a particular
-situation. LHF already implements several common operations within its API and
+MDE in most cases will need to be extended to fit the use-case of a particular
+situation. MDE already implements several common operations within its API and
 can be used as a template to implement further operations. There are a few
 things and rules of thumb to keep in mind while implementing these:
 
 ## Knowledge about internal APIs
 
-It is important that you understand the internal API of LHF to actually
+It is important that you understand the internal API of MDE to actually
 implement an operation both in a manner that is correct and is efficient. The
 theoretical aspects of the mechanism  detailed in the previous sections and
 the doxygen/API documentation are important to understand. Here is a
 (non-exhaustive) list of things to take under consideration:
 
-* Macros for runtime checks enabled with `LHF_ENABLE_DEBUG`.
-* Profiling macros enabled with `LHF_ENABLE_PERFORMANCE_METRICS`.
+* Macros for runtime checks enabled with `MDE_ENABLE_DEBUG`.
+* Profiling macros enabled with `MDE_ENABLE_PERFORMANCE_METRICS`.
 * How registration of sets work.
 * How are operations implemented and how does caching of operations work.
 * How does the subset mechanism work.
@@ -688,7 +688,7 @@ API documentation for the above.
 
 ## Covering Trivial Cases and Precalculated Cases
 
-Checking these will help in increasing the performance of LHF:
+Checking these will help in increasing the performance of MDE:
 
 * Checking whether one or both of the operands are empty.
 * Checking whether operands are equal.
@@ -703,10 +703,10 @@ In essence, the general structure of an operation should look like the
 following:
 
 ```c++
-LHF_BINARY_NESTED_OPERATION(set_operation)
+MDE_BINARY_NESTED_OPERATION(set_operation)
 Index set_operation(const Index &_a, const Index &_b) {
-    LHF_PROPERTY_SET_PAIR_VALID(_a, _b);
-    __lhf_calc_functime(stat);
+    MDE_PROPERTY_SET_PAIR_VALID(_a, _b);
+    __mde_calc_functime(stat);
 
     // ** Handle trivial case of sets being equal **
 
@@ -777,9 +777,9 @@ while (cursor_1 != cursor_end_1) { // Looping condition
                 // ** Nested case **
                 // (We are assuming the operation is named `set_operation`)
                 PropertyElement new_elem =
-                    LHF_PERFORM_BINARY_NESTED_OPERATION(
+                    MDE_PERFORM_BINARY_NESTED_OPERATION(
                         set_operation, reflist, *cursor_1, *cursor_2);
-                LHF_PUSH_ONE(new_set, new_elem);
+                MDE_PUSH_ONE(new_set, new_elem);
             } else {
                 // ** Non-nested case **
             }
@@ -804,23 +804,23 @@ section discusses how the nesting mechanism is implemented in an operation.
 
 The nesting implementation abstracts away the integration into two macros:
 
-* `LHF_BINARY_NESTED_OPERATION(operation_name)`, where `operation_name` exactly
+* `MDE_BINARY_NESTED_OPERATION(operation_name)`, where `operation_name` exactly
   matches the member function name that implements the operation, and,
 
-* `LHF_PERFORM_BINARY_NESTED_OPERATION(operation_name, reflist, arg1, arg2)`,
+* `MDE_PERFORM_BINARY_NESTED_OPERATION(operation_name, reflist, arg1, arg2)`,
   where:
   * `operation_name` is the name of the operation.
-  * `reflist` is the list of references to LHFs. This is already available in
-    the LHF class.
+  * `reflist` is the list of references to MDEs. This is already available in
+    the MDE class.
   * `arg1` is the first operand.
   * `arg2` is the second operand.
 
-`LHF_BINARY_NESTED_OPERATION` creates a special functor that is made to be the
+`MDE_BINARY_NESTED_OPERATION` creates a special functor that is made to be the
 `Operation` template argument. This is definition of the recursive operation and
 will try to run the same operation as the given `operation_name` on the child
-LHFs.
+MDEs.
 
-`LHF_PERFORM_BINARY_NESTED_OPERATION` actually executes `apply` on the current
+`MDE_PERFORM_BINARY_NESTED_OPERATION` actually executes `apply` on the current
 `PropertyElements`.
 
 The above two code examples show where and how they should be put within the
@@ -831,25 +831,25 @@ can be added in as needed. This will require modifications to the `Nesting`
 structs as well, specifically the introduction of a new `apply` member function
 of `PropertyElement` that accepts more arguments.
 
-# Programmatically Architecting Nested LHFs (Builder Tool)
+# Programmatically Architecting Nested MDEs (Builder Tool)
 
-The LHF project includes an additional script that allows you to automatically
-generate declarations of LHF using a JSON-based description language. The files
+The MDE project includes an additional script that allows you to automatically
+generate declarations of MDE using a JSON-based description language. The files
 for this are located in [`src/builder_tool`](./src/builder_tool).
 
 The tool is currently in development and requires more testing. It may not cover
-all of the possible configurations of LHF.
+all of the possible configurations of MDE.
 
 # Shortcomings and Future Work
 
-The current C++ implementation of LHF does not have a way to remove objects and
+The current C++ implementation of MDE does not have a way to remove objects and
 free memory at the moment. Since in the current use-cases of the mechanism the
 memory consumption is lower than the existing solution by design (data-flow
 analysis) this was not put in as a main focus. However there is ongoing work on
-automatic and semi-manual memory management in LHF.
+automatic and semi-manual memory management in MDE.
 
-There is also ongoing work in making LHF parallelized, allowing for multiple
-readers to access the LHF at the same time and transparent workers to perform
+There is also ongoing work in making MDE parallelized, allowing for multiple
+readers to access the MDE at the same time and transparent workers to perform
 desired manipulations in the background.
 
-[doxygen_doc]: https://aghorui.github.io/projects/lhf/doxygen
+[doxygen_doc]: https://aghorui.github.io/projects/mde/doxygen

@@ -2,23 +2,23 @@
 
 This document tracks proposed features that may be implemented in the future.
 
-# LHF Configuration Struct
+# MDE Configuration Struct
 **Status: Nascent**
 
 Instead of having inconveniently large number of template parameters for a
-single LHF, we might encapsulate the parameters in a single struct. Users may
+single MDE, we might encapsulate the parameters in a single struct. Users may
 copy a skeleton of the struct and modify it for their own use.
 
 ```cpp
 struct ConfigInt {
 	using Property = int;
-	using PropertyLess = lhf::DefaultLess<int>;
-	using PropertyHash = lhf::DefaultHash<int>;
-	using PropertyEqual = lhf::DefaultEqual<int>;
-	using PropertyPrinter  = lhf::DefaultPrinter<int>;
+	using PropertyLess = mde::DefaultLess<int>;
+	using PropertyHash = mde::DefaultHash<int>;
+	using PropertyEqual = mde::DefaultEqual<int>;
+	using PropertyPrinter  = mde::DefaultPrinter<int>;
 };
 
 // ...
 
-using LHF = lhf::LatticeHashForest<ConfigInt, NestingBase<ConfigInt, OtherLHF>>;
+using MDE = mde::MDENode<ConfigInt, NestingBase<ConfigInt, OtherMDE>>;
 ```

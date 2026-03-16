@@ -3,13 +3,13 @@
 #include "common.hpp"
 #include <gtest/gtest.h>
 
-using LHF = LHFVerify<lhf::LHFConfig<int>>;
-using Index = typename LHF::Index;
+using MDE = MDEVerify<mde::MDEConfig<int>>;
+using Index = typename MDE::Index;
 
-#if defined(LHF_ENABLE_TBB) || defined(LHF_ENABLE_PARALLEL)
+#if defined(MDE_ENABLE_TBB) || defined(MDE_ENABLE_PARALLEL)
 
-TEST(LHF_ParallelChecks, parallel_stress_test) {
-	LHF l;
+TEST(MDE_ParallelChecks, parallel_stress_test) {
+	MDE l;
 	std::thread t1([&](){
 		for (int i = 0; i < 10000; i++) {
 			l.register_set_single(i);

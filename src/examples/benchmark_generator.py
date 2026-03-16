@@ -91,7 +91,7 @@ def generate_operations(file: IO, dist: RNGType, num_operations: int, universe_m
 
 def main():
 	parser = argparse.ArgumentParser(
-		description="Generate testing input for LatticeHashForest")
+		description="Generate testing input for MDENode")
 
 	parser.add_argument(
 		"--count",

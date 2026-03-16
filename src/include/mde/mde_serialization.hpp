@@ -1,30 +1,30 @@
 /**
- * @file lhf_serialization.hpp
- * @brief Describes serialization building blocks for LHF.
+ * @file mde_serialization.hpp
+ * @brief Describes serialization building blocks for MDE.
  *
  * @note You may notice that a majority of these functions could be inside the
- * LHF class itself. These functions are added here, and largely as templates
- * for a clean separation of concerns and dependencies from the actual LHF
+ * MDE class itself. These functions are added here, and largely as templates
+ * for a clean separation of concerns and dependencies from the actual MDE
  * structure. The second factor is that the serialization routine needs to
- * traverse the DAG of LHFs in order to extract all of the data, and thus is
- * made a separate entity from LHF rather than a member function.
+ * traverse the DAG of MDEs in order to extract all of the data, and thus is
+ * made a separate entity from MDE rather than a member function.
  */
 
-#ifndef LHF_SERIALIZATION_H
-#define LHF_SERIALIZATION_H
+#ifndef MDE_SERIALIZATION_H
+#define MDE_SERIALIZATION_H
 
-#include "lhf_common.hpp"
+#include "mde_common.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-namespace lhf {
+namespace mde {
 
 namespace slz {
 
 using JSON = nlohmann::json;
 
 /**
- * @brief      Struct for serializing/deserializing values in LHF.
+ * @brief      Struct for serializing/deserializing values in MDE.
  *
  * @tparam     T the value to serialize.
  */
@@ -37,7 +37,7 @@ struct ValueSerializer {
 
 /**
  * @brief      Default serialization behavior. If the type of the property in
- *             LHF is something that can be directly serialized to JSON (like
+ *             MDE is something that can be directly serialized to JSON (like
  *             numbers, strings), or has a serializer routine already written
  *             for it (see nlohmann/json documentation), this struct will do so.
  *
@@ -171,16 +171,16 @@ JSON storage_array_to_json(const StoreT &store, Serializer &serializer) {
 /**
  * @brief      Inserts data from the JSON representation to the equivalent C++
  *             data strucure for a PropertySetStorage. It needs direct access
- *             to the LHF object to use `register_set`.
+ *             to the MDE object to use `register_set`.
  *
- * @param      lhf         The LHF object
+ * @param      mde         The MDE object
  * @param[in]  obj         The JSON representation
  * @param      serializer  The serializer
  */
-template<typename LHFT, typename Serializer>
-void register_storage_from_json(LHFT &lhf, const JSON &obj, Serializer &serializer) {
+template<typename MDET, typename Serializer>
+void register_storage_from_json(MDET &mde, const JSON &obj, Serializer &serializer) {
 
-	using PropertyElement = typename LHFT::PropertyElement;
+	using PropertyElement = typename MDET::PropertyElement;
 
 	if (!obj.is_array()) {
 		throw SerializationError("Expected array (root)");
@@ -194,12 +194,12 @@ void register_storage_from_json(LHFT &lhf, const JSON &obj, Serializer &serializ
 		for (auto &i : obj[set_index]) {
 			data.push_back(PropertyElement(serializer.load(i)));
 		}
-		lhf.register_set(std::move(data));
+		mde.register_set(std::move(data));
 	}
 }
 
 /**
- * @brief      Converts an LHF storage array to JSON in the nested case.
+ * @brief      Converts an MDE storage array to JSON in the nested case.
  *
  * @param[in]  store       A PropertySetStorage object or analogue.
  * @param[in]  serializer  A Serializer object.
@@ -246,18 +246,18 @@ Tuple json_list_to_tuple(const JSON& l) {
 /**
  * @brief      Inserts data from the JSON representation to the equivalent C++
  *             data strucure for a PropertySetStorage in the nested case. It
- *             needs direct access to the LHF object to use `register_set`.
+ *             needs direct access to the MDE object to use `register_set`.
  *
- * @param      lhf         The LHF object
+ * @param      mde         The MDE object
  * @param[in]  obj         The JSON representation
  * @param      serializer  The serializer
  */
-template<typename Serializer, typename LHFT>
-void register_storage_from_json_nested(LHFT &lhf, const JSON &obj, Serializer &serializer) {
+template<typename Serializer, typename MDET>
+void register_storage_from_json_nested(MDET &mde, const JSON &obj, Serializer &serializer) {
 
-	using PropertyElement = typename LHFT::PropertyElement;
-	using ChildValueList = typename LHFT::Nesting::ChildValueList;
-	constexpr const Size num_children = LHFT::Nesting::num_children;
+	using PropertyElement = typename MDET::PropertyElement;
+	using ChildValueList = typename MDET::Nesting::ChildValueList;
+	constexpr const Size num_children = MDET::Nesting::num_children;
 
 	if (!obj.is_array()) {
 		throw SerializationError("Expected array (root)");
@@ -279,22 +279,22 @@ void register_storage_from_json_nested(LHFT &lhf, const JSON &obj, Serializer &s
 			auto cvl = json_list_to_tuple<ChildValueList>(i[1]);
 			data.push_back(PropertyElement(serializer.load(i[0]), cvl));
 		}
-		lhf.register_set(std::move(data));
+		mde.register_set(std::move(data));
 	}
 }
 
-template<typename LHFT>
-void lhf_to_json_internal(
-	LHFT &root, JSON &obj,
+template<typename MDET>
+void mde_to_json_internal(
+	MDET &root, JSON &obj,
 	HashSet<void *> &visited, String &path) {
 
 	if (visited.count(&root) > 0) {
-		// LHF_DEBUG(std::cout << "Already found '" << root.name << "' <" << &root << ">\n";);
-		// LHF_DEBUG(std::cout << "Path: " << path << "\n";);
+		// MDE_DEBUG(std::cout << "Already found '" << root.name << "' <" << &root << ">\n";);
+		// MDE_DEBUG(std::cout << "Path: " << path << "\n";);
 		return;
 	} else {
-		// LHF_DEBUG(std::cout << "Visited '" << root.name << "' <" << &root << ">\n";);
-		// LHF_DEBUG(std::cout << "Path: " << path << "\n";);
+		// MDE_DEBUG(std::cout << "Visited '" << root.name << "' <" << &root << ">\n";);
+		// MDE_DEBUG(std::cout << "Path: " << path << "\n";);
 		visited.insert(&root);
 	}
 
@@ -307,45 +307,45 @@ void lhf_to_json_internal(
 		// The fold expression calls this lambda for EACH child in the pack
 		([&](auto& child) {
 			String current_path = path + std::to_string(i++) + "/";
-			lhf_to_json_internal(child, obj, visited, current_path);
+			mde_to_json_internal(child, obj, visited, current_path);
 		}(child_refs), ...);
 	}, root.get_reflist());
 }
 
 /**
- * @brief      Converts an LHF and its referenced child LHFs to JSON.
- *             The individual LHFs are identified using paths starting from the
- *             root LHF (the one supplied as a parameter). A depth-first search
+ * @brief      Converts an MDE and its referenced child MDEs to JSON.
+ *             The individual MDEs are identified using paths starting from the
+ *             root MDE (the one supplied as a parameter). A depth-first search
  *             is performed without any traversals to already visited
  *             references. A JSON object is then created using the string paths
- *             as the keys referring to each LHF.
+ *             as the keys referring to each MDE.
  *
- * @param      root  The LHF object to serialize.
+ * @param      root  The MDE object to serialize.
  * @return     The   JSON representation.
  */
-template<typename LHFT>
-JSON lhf_to_json(LHFT &root) {
+template<typename MDET>
+JSON mde_to_json(MDET &root) {
 	HashSet<void *> visited = {};
 	String path = "/";
 	JSON obj = JSON::object();
-	obj["lhf_version"] = LHF_VERSION_STRING;
-	lhf_to_json_internal(root, obj, visited, path);
+	obj["mde_version"] = MDE_VERSION_STRING;
+	mde_to_json_internal(root, obj, visited, path);
 
 	return obj;
 }
 
-template<typename LHFT>
-void lhf_from_json_internal(
-	LHFT &root, const JSON &obj,
+template<typename MDET>
+void mde_from_json_internal(
+	MDET &root, const JSON &obj,
 	HashSet<void *> &visited, String &path) {
 
 	if (visited.count(&root) > 0) {
-		// LHF_DEBUG(std::cout << "Already found '" << root.name << "' <" << &root << ">\n";);
-		// LHF_DEBUG(std::cout << "Path: " << path << "\n";);
+		// MDE_DEBUG(std::cout << "Already found '" << root.name << "' <" << &root << ">\n";);
+		// MDE_DEBUG(std::cout << "Path: " << path << "\n";);
 		return;
 	} else {
-		// LHF_DEBUG(std::cout << "Visited '" << root.name << "' <" << &root << ">\n";);
-		// LHF_DEBUG(std::cout << "Path: " << path << "\n";);
+		// MDE_DEBUG(std::cout << "Visited '" << root.name << "' <" << &root << ">\n";);
+		// MDE_DEBUG(std::cout << "Path: " << path << "\n";);
 		visited.insert(&root);
 	}
 
@@ -358,22 +358,22 @@ void lhf_from_json_internal(
 		// The fold expression calls this lambda for EACH child in the pack
 		([&](auto& child) {
 			String current_path = path + std::to_string(i++) + "/";
-			lhf_from_json_internal(child, obj, visited, current_path);
+			mde_from_json_internal(child, obj, visited, current_path);
 		}(child_refs), ...);
 	}, root.get_reflist());
 }
 
 /**
- * @brief      Loads all data from the supplied JSON object into LHF.
+ * @brief      Loads all data from the supplied JSON object into MDE.
  *
- * @param      root  The LHF object to load data into.
+ * @param      root  The MDE object to load data into.
  * @param[in]  obj   The object.
  */
-template<typename LHFT>
-void lhf_from_json(LHFT &root, const JSON &obj) {
+template<typename MDET>
+void mde_from_json(MDET &root, const JSON &obj) {
 	HashSet<void *> visited = {};
 	String path = "/";
-	lhf_from_json_internal(root, obj, visited, path);
+	mde_from_json_internal(root, obj, visited, path);
 }
 
 /**
@@ -442,28 +442,28 @@ inline JSON load_bson_file(const String &file_path) {
 	return JSON::from_bson(f);
 }
 
-template<typename LHFT>
-bool save(const LHFT &lhf, const String &file_path) {
-	return json_to_file(lhf_to_json(lhf), file_path);
+template<typename MDET>
+bool save(const MDET &mde, const String &file_path) {
+	return json_to_file(mde_to_json(mde), file_path);
 }
 
-template<typename LHFT>
-bool save_bson(const LHFT &lhf, const String &file_path) {
-	return json_to_file_bson(lhf_to_json(lhf), file_path);
+template<typename MDET>
+bool save_bson(const MDET &mde, const String &file_path) {
+	return json_to_file_bson(mde_to_json(mde), file_path);
 }
 
-template<typename LHFT>
-void load(LHFT &lhf, const String &file_path) {
-	lhf_from_json(lhf, load_json_file(file_path));
+template<typename MDET>
+void load(MDET &mde, const String &file_path) {
+	mde_from_json(mde, load_json_file(file_path));
 }
 
-template<typename LHFT>
-void load_bson(LHFT &lhf, const String &file_path) {
-	lhf_from_json(lhf, load_bson_file(file_path));
+template<typename MDET>
+void load_bson(MDET &mde, const String &file_path) {
+	mde_from_json(mde, load_bson_file(file_path));
 }
 
 }; // END namespace slz
 
-}; // END namespace lhf
+}; // END namespace mde
 
 #endif

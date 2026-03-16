@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script builds LHF based on common flag combinations of LHF.
+# This script builds MDE based on common flag combinations of MDE.
 
 set -o errexit
 set -o nounset

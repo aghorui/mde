@@ -1,10 +1,10 @@
 /**
- * @file lhf_common.hpp
+ * @file mde_common.hpp
  * @brief Any common components go into this file.
  */
 
-#ifndef LHF_CONFIG_HPP
-#define LHF_CONFIG_HPP
+#ifndef MDE_CONFIG_HPP
+#define MDE_CONFIG_HPP
 
 #include <cstddef>
 #include <iostream>
@@ -20,49 +20,49 @@
 #include <functional>
 #include <string>
 
-#ifdef LHF_ENABLE_PARALLEL
+#ifdef MDE_ENABLE_PARALLEL
 #include <atomic>
 #include <mutex>
 #include <shared_mutex>
 #endif
 
-#ifdef LHF_ENABLE_TBB
+#ifdef MDE_ENABLE_TBB
 #include <tbb/tbb.h>
 #include <tbb/concurrent_map.h>
 #include <tbb/concurrent_vector.h>
 #endif
 
-#ifdef LHF_ENABLE_SERIALIZATION
-#include "lhf_serialization.hpp"
+#ifdef MDE_ENABLE_SERIALIZATION
+#include "mde_serialization.hpp"
 #endif
 
-#define LHF_VERSION_MAJOR "0"
-#define LHF_VERSION_MINOR "6"
-#define LHF_VERSION_PATCH "0"
-#define LHF_VERSION_STRING (LHF_VERSION_MAJOR "." LHF_VERSION_MINOR "." LHF_VERSION_PATCH)
+#define MDE_VERSION_MAJOR "0"
+#define MDE_VERSION_MINOR "6"
+#define MDE_VERSION_PATCH "0"
+#define MDE_VERSION_STRING (MDE_VERSION_MAJOR "." MDE_VERSION_MINOR "." MDE_VERSION_PATCH)
 
-#define LHF_SORTED_VECTOR_BINARY_SEARCH_THRESHOLD 12
-#define LHF_DEFAULT_BLOCK_SHIFT 5
-#define LHF_DEFAULT_BLOCK_SIZE (1 << LHF_DEFAULT_BLOCK_SHIFT)
-#define LHF_DEFAULT_BLOCK_MASK (LHF_DEFAULT_BLOCK_SIZE - 1)
-#define LHF_DISABLE_INTERNAL_INTEGRITY_CHECK true
+#define MDE_SORTED_VECTOR_BINARY_SEARCH_THRESHOLD 12
+#define MDE_DEFAULT_BLOCK_SHIFT 5
+#define MDE_DEFAULT_BLOCK_SIZE (1 << MDE_DEFAULT_BLOCK_SHIFT)
+#define MDE_DEFAULT_BLOCK_MASK (MDE_DEFAULT_BLOCK_SIZE - 1)
+#define MDE_DISABLE_INTERNAL_INTEGRITY_CHECK true
 
-namespace lhf {
+namespace mde {
 
-#define ____LHF__STR(x) #x
-#define __LHF_STR(x) ____LHF__STR(x)
+#define ____MDE__STR(x) #x
+#define __MDE_STR(x) ____MDE__STR(x)
 
-#ifdef LHF_ENABLE_DEBUG
-#define LHF_DEBUG(x) { x };
+#ifdef MDE_ENABLE_DEBUG
+#define MDE_DEBUG(x) { x };
 #else
-#define LHF_DEBUG(x)
+#define MDE_DEBUG(x)
 #endif
 
 using Size = std::size_t;
 
 using String = std::string;
 
-#ifdef LHF_ENABLE_PARALLEL
+#ifdef MDE_ENABLE_PARALLEL
 
 using RWMutex = std::shared_mutex;
 

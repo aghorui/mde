@@ -1,22 +1,22 @@
 #include <iostream>
 
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 
 int main() {
-	using ChildLHF =
-		lhf::LatticeHashForest<lhf::LHFConfig<double>>;
+	using ChildMDE =
+		mde::MDENode<mde::MDEConfig<double>>;
 
-	using ChildIndex = typename ChildLHF::Index;
+	using ChildIndex = typename ChildMDE::Index;
 
-	using LHF =
-		lhf::LatticeHashForest<
-			lhf::LHFConfig<int>,
-			lhf::NestingBase<int, ChildLHF>>;
+	using MDE =
+		mde::MDENode<
+			mde::MDEConfig<int>,
+			mde::NestingBase<int, ChildMDE>>;
 
-	using Index = typename LHF::Index;
+	using Index = typename MDE::Index;
 
-	ChildLHF cl;
-	LHF l(LHF::RefList{cl});
+	ChildMDE cl;
+	MDE l(MDE::RefList{cl});
 
 	ChildIndex a = cl.register_set_single(212);
 	std::set acc = {22, 33, 33};

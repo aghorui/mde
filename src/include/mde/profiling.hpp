@@ -1,10 +1,10 @@
 /**
  * @file profiling.hpp
- * @brief Enables basic code-based profiling metrics in LHF.
+ * @brief Enables basic code-based profiling metrics in MDE.
  */
 
-#ifndef LHF_PROFILING_H
-#define LHF_PROFILING_H
+#ifndef MDE_PROFILING_H
+#define MDE_PROFILING_H
 
 #include <cassert>
 #include <chrono>
@@ -16,7 +16,7 @@
 #include <string>
 #include <thread>
 
-namespace lhf {
+namespace mde {
 
 /**
  * @brief      Utility class for enabling code-based profiling.
@@ -151,7 +151,7 @@ struct __CalcTime {
 };
 
 /**
- * @def        __lhf_calc_time(__stat, __key)
+ * @def        __mde_calc_time(__stat, __key)
  * @brief      Creates a timer object to capture duration when going out of
  *             scope.
  *
@@ -160,21 +160,21 @@ struct __CalcTime {
  */
 
 /**
- * @def        __lhf_calc_functime(__stat)
+ * @def        __mde_calc_functime(__stat)
  * @brief      Creates a timer object to capture duration of the current
  *             function when going out of scope.
  *
  * @param      __stat  PerformanceStatistics object
  */
 
-#ifdef LHF_ENABLE_PERFORMANCE_METRICS
-#define __lhf_calc_time(__stat, __key) \
-	auto __LHF_TIMER_OBJECT__ = __CalcTime((__stat), (__key))
-#define __lhf_calc_functime(__stat) \
-	auto __LHF_TIMER_OBJECT__ = __CalcTime((__stat), __func__)
+#ifdef MDE_ENABLE_PERFORMANCE_METRICS
+#define __mde_calc_time(__stat, __key) \
+	auto __MDE_TIMER_OBJECT__ = __CalcTime((__stat), (__key))
+#define __mde_calc_functime(__stat) \
+	auto __MDE_TIMER_OBJECT__ = __CalcTime((__stat), __func__)
 #else
-#define __lhf_calc_time(__stat, __key)
-#define __lhf_calc_functime(__stat)
+#define __mde_calc_time(__stat, __key)
+#define __mde_calc_functime(__stat)
 #endif
 
 }

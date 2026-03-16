@@ -1,10 +1,10 @@
 #include <iostream>
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 
 int main() {
-	using LHF = lhf::LatticeHashForest<lhf::LHFConfig<int>>;
-	using Index = LHF::Index;
-	LHF l;
+	using MDE = mde::MDENode<mde::MDEConfig<int>>;
+	using Index = MDE::Index;
+	MDE l;
 
 	Index a = l.register_set_single(2323);
 	l.register_set_single(2323);
@@ -22,7 +22,7 @@ int main() {
 	l.set_insert_single(d, 24);
 	l.set_remove_single(c, 24);
 
-	for (const LHF::PropertyElement &e : l.get_value(c)) {
+	for (const MDE::PropertyElement &e : l.get_value(c)) {
 		std::cout << e.to_string() << std::endl;
 	}
 

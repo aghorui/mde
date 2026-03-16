@@ -1,4 +1,4 @@
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 #include <gtest/gtest.h>
 #include <utility>
 
@@ -6,13 +6,13 @@ template<>
 struct std::hash<std::pair<float, int>> {
 	std::size_t operator()(const std::pair<float, int>& k) const {
 		return
-			std::hash<lhf::IndexValue>()(k.first) ^
-			(std::hash<lhf::IndexValue>()(k.second) << 1);
+			std::hash<mde::IndexValue>()(k.first) ^
+			(std::hash<mde::IndexValue>()(k.second) << 1);
 	}
 };
 
 template<typename T>
-class LHFVerify: public lhf::LatticeHashForest<T> {
+class MDEVerify: public mde::MDENode<T> {
 public:
 	bool verify_relation_map_init_sizes() {
 		return this->unions.size() == 0 &&

@@ -1,12 +1,12 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"title": "LHF Blueprint Schema",
-	"description": "Provides a complete description of an Blueprint (interconnections and functions) of LatticeHashForests.",
+	"title": "MDE Blueprint Schema",
+	"description": "Provides a complete description of an Blueprint (interconnections and functions) of MDENodes.",
 	"type": "object",
 	"properties": {
-		"lhf_version": {
+		"mde_version": {
 			"type": "string",
-			"description": "Minimum compatible version of LHF."
+			"description": "Minimum compatible version of MDE."
 		},
 		"namespace": {
 			"type": "string",
@@ -22,7 +22,7 @@
 			"additionalProperties": {
 				"$ref": "#/$defs/EntityDefinition"
 			},
-			"description": "List of definitions of entities (LHFs) that exist in the Blueprint. The keys act as identifiers for each definition."
+			"description": "List of definitions of entities (MDEs) that exist in the Blueprint. The keys act as identifiers for each definition."
 		},
 		"blueprint": {
 			"type": "array",
@@ -33,7 +33,7 @@
 		}
 	},
 	"required": [
-		"lhf_version",
+		"mde_version",
 		"namespace",
 		"scalar_definitions",
 		"entity_definitions",

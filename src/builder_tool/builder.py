@@ -18,7 +18,7 @@ from jinja2 import FileSystemLoader, Environment, Template, StrictUndefined
 # CONSTANTS #
 
 BUILDER_VERSION = "0.1.1"
-LHF_SUPPORTED_VERSION = "0.4.1"
+MDE_SUPPORTED_VERSION = "0.4.1"
 
 INPUT_GRAMMAR_SCHEMA_PATH: str = "schema.json"
 TEMPLATE_PATH: str = 'templates'
@@ -26,16 +26,16 @@ DEFAULT_CPP_COMPILERS: List[str] = [ 'gcc', 'clang' ]
 CLANG_FORMAT_COMMAND: str = 'clang-format'
 CLANG_FORMAT_DEFAULT_STYLE: str = 'LLVM'
 DEFAULT_OUTPUT_FILE_NAME: str = "output.hpp"
-LHF_CLASS_NAME: str = 'LatticeHashForest'
-STATE_STRUCT_NAME: str = 'LHFState'
-STORE_STRUCT_NAME: str = 'LHFStore'
-LHF_NAMESPACE: str = 'lhf'
-LHF_HEADER_FILE: str = 'lhf/lhf.hpp'
+MDE_CLASS_NAME: str = 'MDENode'
+STATE_STRUCT_NAME: str = 'MDEState'
+STORE_STRUCT_NAME: str = 'MDEStore'
+MDE_NAMESPACE: str = 'mde'
+MDE_HEADER_FILE: str = 'mde/mde.hpp'
 
-DEFAULT_LESS_FUNCTOR: str = f"{LHF_NAMESPACE}::DefaultLess"
-DEFAULT_EQUAL_FUNCTOR: str = f"{LHF_NAMESPACE}::DefaultEqual"
-DEFAULT_HASH_FUNCTOR: str = f"{LHF_NAMESPACE}::DefaultHash"
-DEFAULT_PRINT_FUNCTOR: str = f"{LHF_NAMESPACE}::DefaultPrinter"
+DEFAULT_LESS_FUNCTOR: str = f"{MDE_NAMESPACE}::DefaultLess"
+DEFAULT_EQUAL_FUNCTOR: str = f"{MDE_NAMESPACE}::DefaultEqual"
+DEFAULT_HASH_FUNCTOR: str = f"{MDE_NAMESPACE}::DefaultHash"
+DEFAULT_PRINT_FUNCTOR: str = f"{MDE_NAMESPACE}::DefaultPrinter"
 
 # DEFINITIONS #
 
@@ -71,7 +71,7 @@ class BlueprintError(Exception):
 
 class ScalarDefinition:
 	"""
-	Defines a value marked as scalar in LHF
+	Defines a value marked as scalar in MDE
 	"""
 	def __init__(self) -> None:
 		self.name: str = ""
@@ -93,7 +93,7 @@ class ScalarDefinition:
 
 class EntityOperation:
 	"""
-	Defines an operation within an LHF entity
+	Defines an operation within an MDE entity
 	"""
 	def __init__(self) -> None:
 		self.name: str = ""
@@ -113,7 +113,7 @@ class EntityOperation:
 
 class EntityDefinition:
 	"""
-	Defines an LHF entity
+	Defines an MDE entity
 	"""
 	def __init__(self) -> None:
 		self.name: str = ""
@@ -269,13 +269,13 @@ class Config:
 		self.compile_command: str = ""
 		self.include_dirs: List[Path] = []
 		self.output_path: Path = Path(os.getcwd()) / DEFAULT_OUTPUT_FILE_NAME
-		self.lhf_header: str = LHF_HEADER_FILE
+		self.mde_header: str = MDE_HEADER_FILE
 		self.format_style: str = CLANG_FORMAT_DEFAULT_STYLE
 		self.ignore_checks: bool = False
 		self.generate_graph: bool = False
 		self.generate_graph_path: Path = Path()
 
-		self.lhf_version: str = ''
+		self.mde_version: str = ''
 		self.namespace: str = ''
 		self.scalar_definitions: List[ScalarDefinition] = []
 		self.scalar_definition_ids: Dict[str, int] = {}
@@ -289,11 +289,11 @@ class Config:
 			f"    Static: {self.no_static}\n" \
 			f"    Include files: {self.include_files}\n" \
 			f"    Include dirs: {self.include_files}\n" \
-			f"    LHF header file path: {self.lhf_header}\n" \
+			f"    MDE header file path: {self.mde_header}\n" \
 			f"    Ignore checks: {self.ignore_checks}\n" \
 			f"    Generate Graph: {'No' if not self.generate_graph else self.generate_graph_path}\n" \
 			f"    ---\n" \
-			f"    LHF Version Required: '{self.lhf_version}'\n" \
+			f"    MDE Version Required: '{self.mde_version}'\n" \
 			f"    Namespace: '{self.namespace}'\n" \
 			f"    Scalar Definitions: {self.scalar_definitions}\n" \
 			f"    Entity Definitions: {self.entity_definitions}\n" \
@@ -381,7 +381,7 @@ def initialize_config() -> Config:
 		format='[%(levelname)s] %(message)s')
 
 	parser = argparse.ArgumentParser(
-		description="Convert an LHF blueprint description to code. WARNING: "
+		description="Convert an MDE blueprint description to code. WARNING: "
 		            "This tool is experiemntal.",
 		epilog="clang-format must be installed in your system if you want "
 		       "the generated output to be fomatted automatically for you.")
@@ -393,7 +393,7 @@ def initialize_config() -> Config:
 	parser.add_argument(
 		'--no-static', '-ns',
 		action='store_true',
-		help="Do not generate static global LHFs. Thread a state object instead.")
+		help="Do not generate static global MDEs. Thread a state object instead.")
 
 	parser.add_argument(
 		'--include-file', '-i',
@@ -410,8 +410,8 @@ def initialize_config() -> Config:
 		help="Code generation output path (default is \'.\')")
 
 	parser.add_argument(
-		'--lhf-header',
-		help="Relative/absolute path override to the LHF header file")
+		'--mde-header',
+		help="Relative/absolute path override to the MDE header file")
 
 	parser.add_argument(
 		'--format-style',
@@ -450,8 +450,8 @@ def initialize_config() -> Config:
 	if args.output_path:
 		config.output_path = Path(args.output_path)
 
-	if args.lhf_header:
-		config.lhf_header = args.lhf_header
+	if args.mde_header:
+		config.mde_header = args.mde_header
 
 	if args.format_style:
 		config.format_style = args.format_style
@@ -484,7 +484,7 @@ def initialize_config() -> Config:
 			grammar_json = json.loads(grammar.read())
 			validate(blp_json, grammar_json)
 
-			config.lhf_version = blp_json['lhf_version']
+			config.mde_version = blp_json['mde_version']
 			config.namespace = blp_json['namespace']
 
 			scalar_definition_autonumber: int = 0
@@ -673,13 +673,13 @@ def process_node(node: dict) -> List:
 
 	return children
 
-class LHFClassDefinition:
+class MDEClassDefinition:
 	def __init__(self,
 		is_tuple: bool,
 		entity_valid: bool,
 		var_name: str,
 		class_name: str,
-		key_definition: ScalarDefinition | Optional['LHFClassDefinition'],
+		key_definition: ScalarDefinition | Optional['MDEClassDefinition'],
 		nesting_type: NestingType,
 		nesting_elems: List[str],
 		dependencies: List[str]) -> None:
@@ -687,7 +687,7 @@ class LHFClassDefinition:
 		self.entity_valid: bool = entity_valid
 		self.var_name: str = var_name
 		self.class_name: str = class_name
-		self.key_definition: ScalarDefinition | Optional['LHFClassDefinition'] = key_definition
+		self.key_definition: ScalarDefinition | Optional['MDEClassDefinition'] = key_definition
 		self.nesting_type: NestingType = nesting_type
 		self.nesting_elems: List[str] = nesting_elems
 		self.dependencies: List[str] = dependencies
@@ -719,7 +719,7 @@ def get_names_from_node(
 	config: Config,
 	node_dedup: Deduplicator[BlueprintNode],
 	blp_id: BlueprintNodeID,
-	existing_defs: Dict[BlueprintNodeID, LHFClassDefinition]) -> LHFClassDefinition:
+	existing_defs: Dict[BlueprintNodeID, MDEClassDefinition]) -> MDEClassDefinition:
 	if blp_id in existing_defs:
 		raise ValueError(f"Blueprint node {blp_id} already present in existing definitions")
 
@@ -727,7 +727,7 @@ def get_names_from_node(
 
 	if isinstance(blp, ScalarNode):
 		s: ScalarDefinition = config.scalar_definitions[blp.value]
-		return LHFClassDefinition(
+		return MDEClassDefinition(
 			is_tuple=False,
 			entity_valid=False,
 			class_name="<INVALID: SCALAR>",
@@ -746,7 +746,7 @@ def get_names_from_node(
 
 		if existing_defs[blp.value].entity_valid:
 			# print("IMPLICIT NESTING")
-			return LHFClassDefinition(
+			return MDEClassDefinition(
 				is_tuple=False,
 				entity_valid=True,
 				class_name=config.entity_definitions[blp.use_as].name,
@@ -758,7 +758,7 @@ def get_names_from_node(
 			)
 		else:
 			# print("NO NESTING")
-			return LHFClassDefinition(
+			return MDEClassDefinition(
 				is_tuple=False,
 				entity_valid=True,
 				class_name=config.entity_definitions[blp.use_as].name,
@@ -790,7 +790,7 @@ def get_names_from_node(
 			nesting_elems = [ *value_def.nesting_elems ]
 			dependencies = [ *value_def.dependencies ]
 
-		return LHFClassDefinition(
+		return MDEClassDefinition(
 			is_tuple=False,
 			entity_valid=True,
 			class_name=config.entity_definitions[blp.use_as].name,
@@ -807,7 +807,7 @@ def get_names_from_node(
 				raise ValueError(f"Blueprint node {v} expected to be "
 			                     f"present in processed nodes but not yet present.")
 
-		return LHFClassDefinition(
+		return MDEClassDefinition(
 			is_tuple=True,
 			entity_valid=False,
 			class_name="<INVALID: TUPLE>",
@@ -850,9 +850,9 @@ def generate_output(
 	t: Template
 
 	if config.no_static:
-		t = tenv.get_template("lhf_definition.jinja2.cpp")
+		t = tenv.get_template("mde_definition.jinja2.cpp")
 	else:
-		t = tenv.get_template("lhf_definition_static.jinja2.cpp")
+		t = tenv.get_template("mde_definition_static.jinja2.cpp")
 
 	visited_nodes = set()
 
@@ -860,7 +860,7 @@ def generate_output(
 	entity_aliases = []
 	interface_aliases = []
 
-	ldefs: Dict[BlueprintNodeID, LHFClassDefinition] = {}
+	ldefs: Dict[BlueprintNodeID, MDEClassDefinition] = {}
 
 	for blp_id in ordering:
 		ldef = get_names_from_node(config, node_dedup, blp_id, ldefs)
@@ -884,7 +884,7 @@ def generate_output(
 		assert(ldef.key_definition != None)
 
 		if ldef.nesting_type == NestingType.IMPLICIT:
-			assert(isinstance(ldef.key_definition, LHFClassDefinition))
+			assert(isinstance(ldef.key_definition, MDEClassDefinition))
 			type_name: str = f"{ldef.key_definition}::Index";
 			type_name_hash: str = f"{ldef.key_definition}::Index::Hash";
 			entities.append({
@@ -917,14 +917,14 @@ def generate_output(
 			})
 
 	s: str = t.render({
-		"lhf_name": LHF_CLASS_NAME,
-		"lhf_version": config.lhf_version,
+		"mde_name": MDE_CLASS_NAME,
+		"mde_version": config.mde_version,
 		"blp_version": BUILDER_VERSION,
-		"lhf_namespace": LHF_NAMESPACE,
+		"mde_namespace": MDE_NAMESPACE,
 		"state_struct_name": STATE_STRUCT_NAME,
 		"store_struct_name": STORE_STRUCT_NAME,
 		"include_files": config.include_files,
-		"lhf_header": config.lhf_header,
+		"mde_header": config.mde_header,
 		"namespace_value": config.namespace,
 		"entities": entities,
 		"entity_aliases": entity_aliases,
@@ -1131,10 +1131,10 @@ def main() -> None:
 	s: str = t.render(
 		include_files = config.include_files,
 		eval_types = eval_types,
-		lhf_header = config.lhf_header,
+		mde_header = config.mde_header,
 		undefined=StrictUndefined)
 
-	with tempfile.TemporaryDirectory(prefix='lhfblp_') as tmpdir:
+	with tempfile.TemporaryDirectory(prefix='mdeblp_') as tmpdir:
 		base_path = Path(tmpdir)
 		source_path = base_path / 'def_eval.cpp'
 		dest_path = base_path / 'def_eval.o'

@@ -1,9 +1,9 @@
-# lhf - CMake Build File
+# mde - CMake Build File
 
-set(LHF_VERSION 0.6.0)
+set(MDE_VERSION 0.6.0)
 
 cmake_minimum_required(VERSION 3.23)
-project(lhf VERSION ${LHF_VERSION} LANGUAGES CXX)
+project(mde VERSION ${MDE_VERSION} LANGUAGES CXX)
 include_guard(GLOBAL)
 
 include(CMakePackageConfigHelpers)
@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(lhf INTERFACE)
+add_library(mde INTERFACE)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -29,7 +29,7 @@ set(EXAMPLE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/examples")
 set(TEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/tests")
 
 # Add include directory for headers.
-target_include_directories(lhf INTERFACE
+target_include_directories(mde INTERFACE
 	$<BUILD_INTERFACE:${INCLUDE_ROOT}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
@@ -80,7 +80,7 @@ set(
 	ENABLE_SERIALIZATION
 	OFF
 	CACHE BOOL
-	"Enable JSON-based serialization routines in LHF.")
+	"Enable JSON-based serialization routines in MDE.")
 
 set(
 	ENABLE_EXAMPLES
@@ -94,37 +94,37 @@ add_compile_options(
 	"-Wno-unused-function"
 	"-g")
 
-file(GLOB INCLUDE_FILES "${INCLUDE_ROOT}/lhf/*.hpp")
+file(GLOB INCLUDE_FILES "${INCLUDE_ROOT}/mde/*.hpp")
 file(GLOB EXAMPLE_SOURCES "${SRC_ROOT}/examples/*.cpp")
 file(GLOB TEST_SOURCES "${SRC_ROOT}/tests/*.cpp")
 
 if(ENABLE_PARALLEL AND ENABLE_TBB)
 	message(FATAL_ERROR "ENABLE_PARALLEL and ENABLE_TBB are mutually exclusive." )
 elseif(ENABLE_PARALLEL)
-	target_compile_definitions(lhf INTERFACE LHF_ENABLE_PARALLEL)
+	target_compile_definitions(mde INTERFACE MDE_ENABLE_PARALLEL)
 elseif(ENABLE_TBB)
 	find_package(TBB REQUIRED)
-	target_compile_definitions(lhf INTERFACE LHF_ENABLE_TBB)
-	target_link_libraries(lhf INTERFACE TBB::tbb)
+	target_compile_definitions(mde INTERFACE MDE_ENABLE_TBB)
+	target_link_libraries(mde INTERFACE TBB::tbb)
 endif()
 
 if(ENABLE_PERFORMANCE_METRICS)
-	target_compile_definitions(lhf INTERFACE LHF_ENABLE_PERFORMANCE_METRICS)
+	target_compile_definitions(mde INTERFACE MDE_ENABLE_PERFORMANCE_METRICS)
 endif()
 
 if(ENABLE_DEBUG)
-	target_compile_definitions(lhf INTERFACE LHF_ENABLE_DEBUG)
+	target_compile_definitions(mde INTERFACE MDE_ENABLE_DEBUG)
 endif()
 
 if(DISABLE_INTEGRITY_CHECKS)
-	target_compile_definitions(lhf INTERFACE LHF_DISABLE_INTEGRITY_CHECKS)
+	target_compile_definitions(mde INTERFACE MDE_DISABLE_INTEGRITY_CHECKS)
 endif()
 
 # Fetch the json library (nlohmann/json)
 
 if(ENABLE_SERIALIZATION)
 	find_package(nlohmann_json 3.11.3 REQUIRED)
-	target_link_libraries(lhf INTERFACE nlohmann_json::nlohmann_json)
+	target_link_libraries(mde INTERFACE nlohmann_json::nlohmann_json)
 endif()
 
 # Compile every single source file in the example directory to an executable
@@ -134,7 +134,7 @@ if(ENABLE_EXAMPLES)
 		get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
 		add_executable("${EXAMPLE_NAME}" "${EXAMPLE_SOURCE}")
 		target_include_directories("${EXAMPLE_NAME}" PRIVATE "${INCLUDE_ROOT}")
-		target_link_libraries("${EXAMPLE_NAME}" lhf)
+		target_link_libraries("${EXAMPLE_NAME}" mde)
 		set_target_properties(${EXAMPLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXAMPLE_OUTPUT_DIR}")
 	endforeach()
 endif()
@@ -165,7 +165,7 @@ if(ENABLE_TESTS)
 		set(TEST_NAME "test_${TEST_NAME}")
 		add_executable("${TEST_NAME}" "${TEST_SOURCE}")
 		target_include_directories("${TEST_NAME}" PRIVATE "${INCLUDE_ROOT}")
-		target_link_libraries("${TEST_NAME}" lhf)
+		target_link_libraries("${TEST_NAME}" mde)
 		target_link_libraries("${TEST_NAME}" GTest::gtest_main)
 		set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TEST_OUTPUT_DIR}")
 		gtest_discover_tests("${TEST_NAME}")
@@ -179,41 +179,41 @@ endif()
 # options for installing header files.
 #
 # Not much thought has been put into the below lines, but it should
-# theoretically work with find_package(lhf) and you'll be able to get the
+# theoretically work with find_package(mde) and you'll be able to get the
 # header inclusions working.
 #
 # It installs by default to /usr/local on a linux machine, as far as I'm aware.
 
-target_sources(lhf
+target_sources(mde
 	INTERFACE FILE_SET HEADERS
 	BASE_DIRS ${INCLUDE_ROOT}
 	FILES ${INCLUDE_FILES})
 
-install(TARGETS lhf
-	EXPORT lhfTargets
+install(TARGETS mde
+	EXPORT mdeTargets
 	FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(EXPORT lhfTargets
-	FILE lhfConfig.cmake
-	NAMESPACE lhf::
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lhf)
+install(EXPORT mdeTargets
+	FILE mdeConfig.cmake
+	NAMESPACE mde::
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mde)
 
 install(FILES
-	${CMAKE_CURRENT_BINARY_DIR}/lhfConfig.cmake
-	${CMAKE_CURRENT_BINARY_DIR}/lhfTargetsVersion.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lhf)
+	${CMAKE_CURRENT_BINARY_DIR}/mdeConfig.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/mdeTargetsVersion.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mde)
 
-export(EXPORT lhfTargets
-	FILE ${CMAKE_CURRENT_BINARY_DIR}/lhfConfig.cmake
-	NAMESPACE lhf::)
+export(EXPORT mdeTargets
+	FILE ${CMAKE_CURRENT_BINARY_DIR}/mdeConfig.cmake
+	NAMESPACE mde::)
 
 configure_package_config_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/lhfConfig.cmake.in
-	${CMAKE_CURRENT_BINARY_DIR}/lhfConfig.cmake
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lhf)
+	${CMAKE_CURRENT_SOURCE_DIR}/mdeConfig.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/mdeConfig.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mde)
 
 write_basic_package_version_file(
-	${PROJECT_BINARY_DIR}/lhfTargetsVersion.cmake
-	VERSION ${LHF_VERSION}
+	${PROJECT_BINARY_DIR}/mdeTargetsVersion.cmake
+	VERSION ${MDE_VERSION}
 	COMPATIBILITY AnyNewerVersion
 	ARCH_INDEPENDENT)

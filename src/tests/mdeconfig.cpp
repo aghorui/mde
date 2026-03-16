@@ -1,5 +1,5 @@
 #include "common.hpp"
-#include "lhf/lhf.hpp"
+#include "mde/mde.hpp"
 #include <cmath>
 #include <sstream>
 
@@ -26,7 +26,7 @@ struct Cmplx {
 	}
 
 	struct Hash {
-		lhf::Size operator()(const Cmplx &a) const {
+		mde::Size operator()(const Cmplx &a) const {
 			return std::hash<float>()(a.magnitude());
 		}
 	};
@@ -37,17 +37,17 @@ struct Cmplx {
 		}
 	};
 
-	struct LHFConfig : lhf::LHFConfig<Cmplx> {
+	struct MDEConfig : mde::MDEConfig<Cmplx> {
 		using PropertyPrinter = Printer;
 		using PropertyHash = Hash;
 	};
 };
 
-using LHF = lhf::LatticeHashForest<Cmplx::LHFConfig>;
-using Index = LHF::Index;
+using MDE = mde::MDENode<Cmplx::MDEConfig>;
+using Index = MDE::Index;
 
-TEST(LHF_ConfigStructTests, basic_config_usage_test) {
-	LHF l;
+TEST(MDE_ConfigStructTests, basic_config_usage_test) {
+	MDE l;
 
 	Index a = l.register_set_single(Cmplx{1, 2});
 	Index b = l.register_set({Cmplx{2, 2}, Cmplx{3, 3}, Cmplx{4, 4}});

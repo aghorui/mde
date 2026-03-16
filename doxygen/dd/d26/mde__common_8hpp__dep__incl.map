@@ -1,0 +1,7 @@
+<map id="src/include/mde/mde_common.hpp" name="src/include/mde/mde_common.hpp">
+<area shape="rect" id="Node000001" title="Any common components go into this file." alt="" coords="107,5,250,45"/>
+<area shape="rect" id="Node000002" href="$d3/d63/mde_8hpp.html" title="Defines the MDENode structure and related tools." alt="" coords="5,101,173,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,57,104,102,100,98,147,53"/>
+<area shape="rect" id="Node000003" href="$d4/db1/mde__serialization_8hpp.html" title="Describes serialization building blocks for MDE." alt="" coords="198,93,341,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="210,53,251,91,247,95,207,57"/>
+</map>

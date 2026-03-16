@@ -1,0 +1,35 @@
+<map id="src/include/mde/mde_serialization.hpp" name="src/include/mde/mde_serialization.hpp">
+<area shape="rect" id="Node000001" title="Describes serialization building blocks for MDE." alt="" coords="656,5,799,45"/>
+<area shape="rect" id="Node000002" href="$db/de8/mde__common_8hpp.html" title="Any common components go into this file." alt="" coords="540,93,669,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="699,48,636,88,633,84,696,43"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="694,93,761,119"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="730,46,730,79,725,79,725,46"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="785,93,915,119"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="758,43,822,84,819,88,756,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,167,71,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="540,115,340,133,215,149,85,169,84,164,214,144,340,128,539,109"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="95,167,167,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="540,117,381,137,181,169,180,164,380,132,540,112"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="191,167,261,192"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="540,120,275,169,274,164,539,115"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="285,167,354,192"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="559,121,368,169,367,163,558,116"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="378,167,447,192"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="575,121,458,164,456,159,573,116"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="472,167,551,192"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="591,121,539,160,536,156,588,117"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="575,167,634,192"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="607,119,607,153,602,153,602,119"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="659,167,705,192"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="619,117,661,155,657,159,615,121"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="729,167,840,192"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="635,116,744,159,742,164,633,121"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="865,167,905,192"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="660,116,747,136,852,164,851,169,745,141,659,121"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="929,167,1033,192"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="666,116,915,163,914,168,665,121"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="1057,167,1136,192"/>
+<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="670,114,682,116,861,138,1044,164,1043,169,861,143,682,121,669,120"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="1160,167,1215,192"/>
+<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="670,114,682,116,811,129,913,135,1016,143,1146,164,1146,169,1015,149,913,140,811,134,682,121,669,120"/>
+</map>

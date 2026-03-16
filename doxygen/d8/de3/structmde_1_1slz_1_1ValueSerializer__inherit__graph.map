@@ -1,0 +1,5 @@
+<map id="mde::slz::ValueSerializer&lt; T &gt;" name="mde::slz::ValueSerializer&lt; T &gt;">
+<area shape="rect" id="Node000001" title="Struct for serializing/deserializing values in MDE." alt="" coords="26,5,223,31"/>
+<area shape="rect" id="Node000002" href="$d0/d29/structmde_1_1slz_1_1DefaultValueSerializer.html" title="Default serialization behavior. If the type of the property in MDE is something that can be directly ..." alt="" coords="5,79,244,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,44,127,79,122,79,122,44"/>
+</map>

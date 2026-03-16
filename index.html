@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta charset="UTF-8" />
+	<title>Multilevel Deduplication Engine</title>
+	<link rel="icon" type="image/x-icon" href="./assets/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="./assets/main.css" />
+</head>
+<body>
+
+<div class="container">
+	<div class="header">
+		<img src="./assets/logo.svg" alt="Logo" class="logo dark-img-bg" />
+		<div>
+			<h1 class="title">Multilevel Deduplication Engine</h1>
+			<i>(formerly LatticeHashForest)</i>
+		</div>
+	</div>
+
+<p><i>Please note: These descriptions are not final and are subject to change.</i></p>
+<p>Multilevel Deduplication Engine (MDE) is a data representation caching
+mechanism that is meant
+to facilitate aggressive caching of redundant data, and operations performed on
+such redundant data. MDE aims to reduce both the memory footprint as well as the
+CPU time used by an application for every operation performed on its data when
+compared to naive storage and operations on it by reducing each unique instance
+of data to a unique integer identifier, and reducing the cost of performing
+any bulk operation on data as much as possible. It builds on the following
+assumptions for some given information system:</p>
+
+<ol>
+<li>Data is often repetitive.</li>
+<li>Data is often redundantly computed.</li>
+<li>Data is often sparse.</li>
+<li>There are (usually) set patterns and common input data used for the
+computation of new data.</li>
+</ol>
+
+<p>
+	MDE finds its main applications in the domain of compilers and code
+	optimization, specifically in the field of data-flow analyses, such as
+	Liveness Analysis and Points-to Analysis.
+</p>
+
+<p>The current MDE toolset consists of a C++ implementation of the mechanism, and
+a Python script that generates an automatically set-up interface from a given
+input description.</p>
+
+<p>MDE assigns a unique number to each unique set that is inserted or computed,
+which reduces operations, like checking for equality, to a simple integer
+comparison. In order to prevent duplicate sets, a mapping from the set to the
+unique integer is stored in a hash table. The set's contents are hashed.</p>
+
+<p>MDE hashes operations like unions, intersections and differences as well,
+and stores the mapping for each operation (a pair of integers denoting the two
+operands, to the result, which is another integer) in a separate hash table,
+allowing for efficient access to already computed information. Other inferences
+from the operation, such as subset relations are also hashed in order to
+possibly speed up future operations.</p>
+
+<p>MDE is meant to be extended to fit the needs of a particular use case. The
+class should be derived and more operations or facilities should be implemented
+as required if in case the default MDE class does not meet all needs.</p>
+
+<p>This project is still in active development. Please check out the
+<a href="https://github.com/aghorui/mde/blob/master/doc/guide.md">manual</a> to
+understand the workings and the use-cases of this project in detail.</p>
+
+<h2>Related Publication and Artifiacts</h2>
+<p>
+An obsolete preprint version of the submitted paper for MDE is available
+<a href="https://arxiv.org/abs/2510.18496">here (DOI 10.48550/arXiv.2510.18496)</a>.
+A version of the accompanying artifact to this paper is available at
+<a href="https://github.com/aghorui/lhf-eval">https://github.com/aghorui/lhf-eval</a>.
+</p>
+
+<h2>Links:</h2>
+<p><a class="ext-link" href="https://github.com/aghorui/mde">Github Repository</a></p>
+<p><a class="ext-link" href="https://github.com/aghorui/mde/blob/master/doc/guide.md">Design Document and Manual</a></p>
+<p><a class="ext-link" href="./doxygen">Doxygen API Documentation</a></p>
+<p><a class="ext-link" href="./schema">JSON Description Language Schema Documentation</a></p>
+	<div class="footer">
+		<hr />
+		<i>Copyright (C) 2025 aghorui</i> <br/>
+	</div>
+</div>
+
+</body>
+</html>

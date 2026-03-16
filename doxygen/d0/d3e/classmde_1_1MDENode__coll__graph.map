@@ -1,0 +1,24 @@
+<map id="mde::MDENode&lt; Config, NestingT &gt;" name="mde::MDENode&lt; Config, NestingT &gt;">
+<area shape="rect" id="Node000001" title="The main MDENode structure. This class can be used as&#45;is with a type or derived for additional functi..." alt="" coords="1069,136,1240,176"/>
+<area shape="rect" id="Node000002" href="$d4/ded/structmde_1_1PerformanceStatistics.html" title="Utility class for enabling code&#45;based profiling." alt="" coords="679,7,863,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="869,33,913,43,981,62,1047,90,1124,134,1122,138,1044,94,979,67,911,48,867,38"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="401,7,485,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="500,17,679,17,679,23,500,23"/>
+<area shape="rect" id="Node000004" href="$d7/d15/classmde_1_1MDENode_1_1PropertySetStorage.html" title=" " alt="" coords="665,57,878,97"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="883,98,1069,136,1068,141,882,103"/>
+<area shape="rect" id="Node000005" href="$dd/d34/classmde_1_1MapAdapter.html" title=" " alt="" coords="631,121,912,191"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="926,153,1069,153,1069,159,926,159"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="345,121,541,191"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="555,153,630,153,630,159,555,159"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="149,143,264,169"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="278,153,345,153,345,159,278,159"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="5,143,44,169"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="58,153,149,153,149,159,58,159"/>
+<area shape="rect" id="Node000009" href="$dd/d34/classmde_1_1MapAdapter.html" title=" " alt="" coords="675,215,868,255"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="881,228,962,220,1045,203,1082,190,1116,174,1118,179,1084,195,1046,208,963,225,882,234"/>
+<area shape="rect" id="Node000010" href="$d0/df2/structmde_1_1OperationNode.html" title="This struct contains the information about the operands of an operation (union, intersection,..." alt="" coords="372,255,515,281"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="528,257,674,242,675,247,529,262"/>
+<area shape="rect" id="Node000011" href="$dd/d34/classmde_1_1MapAdapter.html" title=" " alt="" coords="658,279,885,319"/>
+<area shape="poly" id="edge11_Node000011_Node000010" title=" " alt="" coords="527,280,566,285,658,292,658,298,565,291,526,286"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="897,285,972,269,1044,243,1070,228,1094,210,1133,174,1137,178,1098,214,1073,232,1046,248,973,274,899,290"/>
+</map>

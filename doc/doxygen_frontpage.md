@@ -1,4 +1,4 @@
-# MDENode Source/API Documentation
+# MDE Source/API Documentation
 
 This page contains auto-generated documentation based on the annotated
 sourcecode of MDE.
@@ -8,7 +8,8 @@ Some components of interest are listed below:
 
 * Files in the project:
   * `mde.hpp`
-  * `mde_config.hpp`
+  * `mde_common.hpp`
+  * `mde_serialization.hpp`
   * `profiling.hpp`
 
 * The [mde namespace](@ref mde)

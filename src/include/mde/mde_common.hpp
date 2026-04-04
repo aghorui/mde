@@ -148,7 +148,7 @@ public:
 			return *value;
 		} else {
 			throw AbsentValueAccessError("Tried to access an absent value. "
-				                         "A check is likely missing.");
+			                             "A check is likely missing.");
 		}
 	}
 };
@@ -185,7 +185,7 @@ public:
 			return value;
 		} else {
 			throw AbsentValueAccessError("Tried to access an absent value. "
-				                         "A check is likely missing.");
+			                             "A check is likely missing.");
 		}
 	}
 };

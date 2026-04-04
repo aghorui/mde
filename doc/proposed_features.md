@@ -3,7 +3,7 @@
 This document tracks proposed features that may be implemented in the future.
 
 # MDE Configuration Struct
-**Status: Nascent**
+**Status: Implemented**
 
 Instead of having inconveniently large number of template parameters for a
 single MDE, we might encapsulate the parameters in a single struct. Users may

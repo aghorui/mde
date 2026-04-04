@@ -1,8 +1,8 @@
 MDE Documentation and Design Document
 =====================================
 ```
-Last updated: 2025-06-28
-Meant for:    Version 0.3.1
+Last updated: 2026-03-02
+Meant for:    Version 0.6.0
 ```
 
 # Note

@@ -15,7 +15,7 @@ var searchData=
   ['setless_12',['SetLess',['../dc/da9/structmde_1_1SetLess.html',1,'mde']]],
   ['size_13',['size',['../dd/d34/classmde_1_1MapAdapter.html#a34374ce1b95c4d9d6df8bbdeacac52f7',1,'mde::MapAdapter::size()'],['../d7/d15/classmde_1_1MDENode_1_1PropertySetStorage.html#ac75df47799406d2950dd292478819939',1,'mde::MDENode::PropertySetStorage::size()'],['../da/dc1/namespacemde.html#a3c5137e23c2150cdee7ec81b4128b0b2',1,'mde::Size']]],
   ['size_5fof_14',['size_of',['../d0/dcb/classmde_1_1MDENode.html#a35a71fbee8bc9d040428cfcd7d8b44dc',1,'mde::MDENode']]],
-  ['source_20api_20documentation_15',['MDENode Source/API Documentation',['../index.html',1,'']]],
+  ['source_20api_20documentation_15',['MDE Source/API Documentation',['../index.html',1,'']]],
   ['started_16',['started',['../d8/d70/structmde_1_1PerformanceStatistics_1_1Duration.html#a349189e09b8a1c4392ea1e90b88f27f0',1,'mde::PerformanceStatistics::Duration']]],
   ['stat_17',['stat',['../d5/d00/structmde_1_1____CalcTime.html#a74e59ca7b10664c4965ef562a1c6bee8',1,'mde::__CalcTime::stat'],['../d0/dcb/classmde_1_1MDENode.html#af5cf1c9e1f15c525d0dc87047c0951b0',1,'mde::MDENode::stat']]],
   ['storage_5farray_5fto_5fjson_18',['storage_array_to_json',['../de/d80/namespacemde_1_1slz.html#afe312ff8e56a6b5fdf2cd6afd9c93254',1,'mde::slz']]],

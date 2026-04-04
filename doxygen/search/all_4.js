@@ -8,7 +8,7 @@ var searchData=
   ['defaultprinter_5',['DefaultPrinter',['../d9/deb/structmde_1_1DefaultPrinter.html',1,'mde']]],
   ['defaultvalueserializer_6',['DefaultValueSerializer',['../d0/d29/structmde_1_1slz_1_1DefaultValueSerializer.html',1,'mde::slz']]],
   ['differences_7',['differences',['../d0/dcb/classmde_1_1MDENode.html#acbc6225149f4fc4f02726362f4c475cf',1,'mde::MDENode']]],
-  ['documentation_8',['MDENode Source/API Documentation',['../index.html',1,'']]],
+  ['documentation_8',['MDE Source/API Documentation',['../index.html',1,'']]],
   ['doxygen_5ffrontpage_2emd_9',['doxygen_frontpage.md',['../de/d89/doxygen__frontpage_8md.html',1,'']]],
   ['dump_10',['dump',['../d4/ded/structmde_1_1PerformanceStatistics.html#a7ff473c813649a1fceeb6c67c0524602',1,'mde::PerformanceStatistics::dump()'],['../d7/db5/structmde_1_1Deduplicator.html#acba8b26f10bb77c8f77d0dd29077e207',1,'mde::Deduplicator::dump()'],['../d0/dcb/classmde_1_1MDENode.html#abf7eb98a4dba425727637f2c03644c27',1,'mde::MDENode::dump() const']]],
   ['dump_5fperf_11',['dump_perf',['../d0/dcb/classmde_1_1MDENode.html#ab5db5bce525e519c28fa3be12d1a2365',1,'mde::MDENode']]],

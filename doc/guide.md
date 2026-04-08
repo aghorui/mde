@@ -1,8 +1,8 @@
 MDE Documentation and Design Document
 =====================================
 ```
-Last updated: 2026-03-02
-Meant for:    Version 0.6.0
+Last updated: 2026-04-03
+Meant for:    Version 0.6.1
 ```
 
 # Note
@@ -238,7 +238,7 @@ classes and functions used here are given later in this document.
 ```c++
 int main() {
     // It is recommended to use type aliases wherever needed.
-    using MDE = mde::MDENode<int>;
+    using MDE = mde::MDENode<mde::MDEConfig<int>>;
     using Index = MDE::Index;
 
     MDE l;
@@ -268,12 +268,8 @@ The full template declaration of the MDE class is as follows:
 
 ```c++
 template <
-    typename PropertyT,
-    typename PropertyLess = DefaultLess<PropertyT>,
-    typename PropertyHash = DefaultHash<PropertyT>,
-    typename PropertyEqual = DefaultEqual<PropertyT>,
-    typename PropertyPrinter = DefaultPrinter<PropertyT>,
-    typename Nesting = NestingNone<PropertyT>>
+    typename Config,
+    typename NestingT = NestingNone<typename Config::PropertyT>>
 class MDENode {
      // ...
 ```
@@ -285,10 +281,29 @@ For a data type to be used as a property (`PropertyT`) in MDE, it must be:
 * `PropertyEqual`: Equality comparable (`a == b`), and,
 * `PropertyPrinter`: Convertible to a string.
 
+MDENode takes `MDEConfig` as a parameter. This struct contains a series of
+typedefs that MDE uses as its configuration. Its structure is as follows:
+
+```c++
+template <typename T>
+struct MDEConfig {
+    static constexpr const char* name = "";
+
+    using PropertyT          = T;
+    using PropertyLess       = DefaultLess<PropertyT>;
+    using PropertyHash       = DefaultHash<PropertyT>;
+    using PropertyEqual      = DefaultEqual<PropertyT>;
+    using PropertyPrinter    = DefaultPrinter<PropertyT>;
+
+    // More parameters...
+};
+```
+
 For trivial cases like `int` or `std::string`, these can be ignored entirely as
-all of these traits have already been defined. However, if one wants to utilize
-custom behaviour for their property type they must implement these custom traits
-as either functors or within the class of the type itself.
+all of these traits have already been defined. Thus, supplying
+`MDEConfig<required_type>` should suffice in most cases. However, if one wants
+to utilize custom behaviour for their property type they must implement these
+custom traits as either functors or within the class of the type itself.
 
 `DefaultLess`, `DefaultHash`, `DefaultEqual` and `DefaultPrinter` are functors
 that define these abilities for a given `PropertyT`. Out of these, all except
@@ -320,9 +335,28 @@ friend std::ostream& operator<<(std::ostream& os, const PropertyT& obj) {
 }
 ```
 
+To supply these custom parameters, the `MDEConfig` struct can be overridden as
+follows for the new information:
+
+```c++
+struct ComplexNum {
+    //...
+};
+
+struct ComplexPrinter { ... }
+struct ComplexHash { ... }
+
+// We override the Printer and the Hash functors for our MDE.
+struct ComplexMDEConfig : mde::MDEConfig<ComplexNum> {
+    using PropertyPrinter = ComplexPrinter;
+    using PropertyHash = ComplexHash;
+};
+using MDE = mde::MDENode<ComplexMDEConfig>;
+```
+
 The above template parameters define the domain of values that can be
-represented by the MDE. The template parameter `Nesting` is discussed in a later
-section.
+represented by the MDENode. The template parameter `Nesting` in `MDENode`
+is discussed in a later section.
 
 ### Note on (Runtime) Instance Creation
 
@@ -364,8 +398,9 @@ to a particular MDE class do not get used in any other MDE, which can likely
 cause bugs.
 
 This however does not statically prevent two instances of the same MDE class
-from exchanging indices, however this is not supposed to be a problem as there
-should'nt be any special reason to use two or more instances.
+from exchanging indices, however this largely is not supposed to be a problem as
+there should'nt be any reason to use two or more instances of the same MDE
+configuration in most cases.
 
 ## Inserting Data Into MDE
 
@@ -453,6 +488,8 @@ necessarily exhaustive):
 * `get_value()`: returns the list of values that have been nested. This is
   discussed in later sections. In the case of no nesting, however, it simply
   returns the "key" value.
+* `value<N>()`: returns the Nth index in the list of nested values.
+* `value0()`: returns the 0th eindex in the list of nested values.
 * `to_string()`: Returns a string representation of the `PropertyElement`.
 * Overloads for `<`, `==`: These overloads only operate on the `key` value and
   do not access the children.
@@ -582,15 +619,12 @@ see in this example **into another MDE instance**.
 
 ```c++
 // The MDE that stores the adjacency lists. The "child".
-using AdjLists = mde::MDENode<int>;
+using AdjLists = mde::MDENode<mde::MDEConfig<int>>;
 using AdjListIndex = AdjLists::Index;
 
 // The MDE that stores the graph. The "parent".
-using Graphs = mde::MDENode<int,
-    mde::DefaultLess<int>,
-    mde::DefaultHash<int>,
-    mde::DefaultEqual<int>,
-    mde::DefaultPrinter<int>,
+using Graphs = mde::MDENode<
+    mde::MDEConfig<int>,
     mde::NestingBase<int, AdjLists>>;
 using GraphIndex = Graphs::Index;
 ```
@@ -841,12 +875,6 @@ The tool is currently in development and requires more testing. It may not cover
 all of the possible configurations of MDE.
 
 # Shortcomings and Future Work
-
-The current C++ implementation of MDE does not have a way to remove objects and
-free memory at the moment. Since in the current use-cases of the mechanism the
-memory consumption is lower than the existing solution by design (data-flow
-analysis) this was not put in as a main focus. However there is ongoing work on
-automatic and semi-manual memory management in MDE.
 
 There is also ongoing work in making MDE parallelized, allowing for multiple
 readers to access the MDE at the same time and transparent workers to perform
